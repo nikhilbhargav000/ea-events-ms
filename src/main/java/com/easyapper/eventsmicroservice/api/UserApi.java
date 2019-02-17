@@ -1,12 +1,15 @@
 package com.easyapper.eventsmicroservice.api;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,12 +20,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidPostedEventIdException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
+import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.model.EventDTO;
@@ -30,8 +35,9 @@ import com.easyapper.eventsmicroservice.model.SubscribedEventDTO;
 import com.easyapper.eventsmicroservice.model.UserEventListResponseDTO;
 import com.easyapper.eventsmicroservice.model.UserEventListsContainerDTO;
 import com.easyapper.eventsmicroservice.service.UserService;
+import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
-import com.easyapper.eventsmicroservice.utility.Validator;
+import com.easyapper.eventsmicroservice.utility.EAValidator;
 
 @RestController
 @RequestMapping(value="users")
@@ -42,6 +48,9 @@ public class UserApi {
 	
 	@Autowired
 	EALogger logger;
+	
+	@Autowired 
+	EAValidator validator;
 	
 	/**
 	 * Store Post Event in DB
@@ -60,7 +69,7 @@ public class UserApi {
 			result.getAllErrors().stream().forEach(e -> logger.warning(e.getDefaultMessage()));
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		if(!Validator.isValidPostedEvent(eventPostDto)) {
+		if(!EAValidator.isValidPostedEvent(eventPostDto)) {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		String id = null;
@@ -91,7 +100,7 @@ public class UserApi {
 			result.getAllErrors().stream().forEach(e -> logger.warning(e.getDefaultMessage()));
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		if(!Validator.isValidSubscribedEvent(eventDto)) {
+		if(!EAValidator.isValidSubscribedEvent(eventDto)) {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		String id = null;
@@ -144,7 +153,7 @@ public class UserApi {
 			return new ResponseEntity<String>(result.getAllErrors().get(0).getDefaultMessage(), 
 					HttpStatus.BAD_REQUEST);
 		}
-		if(!Validator.isValidEvent(eventUpdateDto)) {
+		if(!EAValidator.isValidEvent(eventUpdateDto)) {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		try {
@@ -212,5 +221,26 @@ public class UserApi {
 		}
 		UserEventListResponseDTO responseDto = new UserEventListResponseDTO(allEventResponse);
 		return new ResponseEntity<UserEventListResponseDTO>(responseDto, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="{userId}/image", method=RequestMethod.POST)
+	public ResponseEntity<String> uploadImage(HttpServletRequest request
+			, @PathVariable("userId") String userId
+			,@RequestParam(value = "file", required=true) MultipartFile imageFile){
+		logger.info("In UserApi : uploadImage");
+		if(!validator.isValidImageFile(imageFile)) {
+			return new ResponseEntity(HttpStatus.BAD_REQUEST);
+		}
+		String imageUrl = null;
+		try {
+			imageUrl = userService.storeImage(request, userId, imageFile);
+		}catch(IOException e) {
+			logger.warning(e.getMessage(), e);
+			return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
+		} catch (NoExtensionFoundException e) {
+			logger.warning(e.getMessage(), e);
+			return new ResponseEntity(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>(imageUrl, HttpStatus.CREATED);
 	}
 }

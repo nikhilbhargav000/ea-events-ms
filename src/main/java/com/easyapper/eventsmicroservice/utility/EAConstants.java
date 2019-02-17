@@ -1,5 +1,6 @@
 package com.easyapper.eventsmicroservice.utility;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,6 +27,13 @@ public final class EAConstants {
 	public static final String SUBSCRIBED_EVENT_COLLECTION_DB_NAME = "SubscribedEventCollection";
 	public static final String EVENT_TYPE_POSTED = "posted";
 	public static final String EVENT_TYPE_SUBSCRIBED = "subscribed";
+	
+	public static final String IMAGE_API_MAPPING = "images";
+	public static final String IMAGE_BASE_DIRECTORY = File.separator + "images" + File.separator;
+	public static final String IMAGE_SEQ_COUNTER_NAME = "ImageSeqCounter";
+	public static final String PNG_EXTENTION = ".png";
+	public static final String JPEG_EXTENTION = ".jpeg";
+	
 
 	public static final String EVENT_TYPE_KEY = "event_type";
 	public static final String EVENT_CATEGORY_KEY = "event_category";
@@ -56,5 +64,8 @@ public final class EAConstants {
 
 	public static final String DATE_FORMAT_PATTERN = "dd/MM/yyyy";
 	public static final String TIME_FORMAT_PATTERN = "HH:mm";
-	
+	public static final String TIME_STAMP_FORMAT_PATTERN = "yyyyMMdd:HHmmssSS";
+	public static final String UNDERSCORE = "_";
+	public static final String DOT_REGEX = "\\.";
+	public static final String DOT = ".";
 }

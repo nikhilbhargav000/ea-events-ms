@@ -1,14 +1,25 @@
 package com.easyapper.eventsmicroservice.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.easyapper.eventsmicroservice.api.ImageApi;
 import com.easyapper.eventsmicroservice.dao.DBSeqValueFinder;
 import com.easyapper.eventsmicroservice.dao.PostedEventDao;
 import com.easyapper.eventsmicroservice.dao.PostedEventDaoImpl;
@@ -23,6 +34,7 @@ import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidPostedEventIdException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
+import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.model.AddressDTO;
@@ -32,7 +44,7 @@ import com.easyapper.eventsmicroservice.model.EventDTO;
 import com.easyapper.eventsmicroservice.model.LocationDTO;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
-import com.easyapper.eventsmicroservice.utility.Validator;
+import com.easyapper.eventsmicroservice.utility.EAValidator;
 
 @Service
 public class UserService {
@@ -47,7 +59,7 @@ public class UserService {
 	DBSeqValueFinder dbSeqFinder;
 	
 	@Autowired
-	Validator validator;
+	EAValidator validator;
 	
 	public String createPostedEvent(String userId, EventDTO eventDto) throws EasyApperDbException {
 		PostedEventEntity eventEntity = EAUtil.getPostedEventEntity(eventDto);
@@ -124,6 +136,21 @@ public class UserService {
 		}
 	}
 	
+	public String storeImage(HttpServletRequest request, String userId,
+			MultipartFile imageFile) throws IOException, NoExtensionFoundException  {
+		Path imagesDirPath = Paths.get(EAUtil.getImageRootDir());
+		String strTimeStamp = EAUtil.getTimeStampFormatStr(new Timestamp(System.currentTimeMillis()) );
+		String serverFileName = userId + EAConstants.UNDERSCORE + strTimeStamp
+				+ EAUtil.getImageFileExtension(imageFile);
+		if(!Files.exists(imagesDirPath)) {
+			Files.createDirectories(imagesDirPath);
+		}
+		Path serverFilePath = Files.write(imagesDirPath.resolve(serverFileName), imageFile.getBytes());
+		String imgUrl = EAUtil.getDomainUrl(request) + File.separator + 
+				EAConstants.IMAGE_API_MAPPING + File.separator + serverFileName;
+		return imgUrl;
+	}
+	
 	public UserEventListsContainerDTO getAllUserEvent(String userId, Map<String, String> paramMap) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
 		List<PostedEventEntity> postedEntityList  = postedEventDao.getAllEvent(userId);
 		List<EventDTO> postedDtoList = this.getPostedEventDtoList(postedEntityList);
@@ -178,7 +205,7 @@ public class UserService {
 		}if(eventDto.getEvent_start_time() == null) {
 			return false;
 		}
-		if(!Validator.isValidTime(eventDto.getEvent_start_time())) {
+		if(!EAValidator.isValidTime(eventDto.getEvent_start_time())) {
 			throw new InvalidTimeFormatException();
 		}
 		String strTime = eventDto.getEvent_start_time();
@@ -194,7 +221,7 @@ public class UserService {
 		}if(eventDto.getEvent_end_time() == null) {
 			return false;
 		}
-		if(!Validator.isValidTime(eventDto.getEvent_end_time())) {
+		if(!EAValidator.isValidTime(eventDto.getEvent_end_time())) {
 			throw new InvalidTimeFormatException();
 		}
 		String strTime = eventDto.getEvent_end_time();
@@ -211,7 +238,7 @@ public class UserService {
 		}if(eventDto.getEvent_last_date() == null) {
 			return false;
 		}
-		if(!Validator.isValidDate(checkVal)) {
+		if(!EAValidator.isValidDate(checkVal)) {
 			throw new InvalidDateFormatException();
 		}
 		String strLastDate = eventDto.getEvent_last_date();
@@ -227,7 +254,7 @@ public class UserService {
 		}if(eventDto.getEvent_start_date() == null) {
 			return false;
 		}
-		if(!Validator.isValidDate(checkVal)) {
+		if(!EAValidator.isValidDate(checkVal)) {
 			throw new InvalidDateFormatException();
 		}
 		String strStartDate = eventDto.getEvent_start_date();

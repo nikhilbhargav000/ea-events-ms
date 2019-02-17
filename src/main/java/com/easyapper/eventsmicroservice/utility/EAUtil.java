@@ -1,14 +1,20 @@
 package com.easyapper.eventsmicroservice.utility;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.easyapper.eventsmicroservice.entity.AddressSubEntity;
 import com.easyapper.eventsmicroservice.entity.EventBookingSubEntity;
 import com.easyapper.eventsmicroservice.entity.LocationSubEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
+import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.model.AddressDTO;
 import com.easyapper.eventsmicroservice.model.EventBookingDTO;
 import com.easyapper.eventsmicroservice.model.LocationDTO;
@@ -126,6 +132,11 @@ public class EAUtil {
 		return eventEntity;
 	}
 
+	
+	public static String getTimeStampFormatStr(Timestamp timeStamp) {
+		SimpleDateFormat formatter = new SimpleDateFormat(EAConstants.TIME_STAMP_FORMAT_PATTERN);
+		return formatter.format(timeStamp);
+	}
 	public static String getDateFormatStr(Date dateObj) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(EAConstants.DATE_FORMAT_PATTERN);
 		return dateFormat.format(dateObj);
@@ -152,5 +163,25 @@ public class EAUtil {
 			logger.warning(e.getMessage(), e);
 			return null;
 		}
+	}
+	
+	public static String getImageRootDir() {
+		String rootDir = System.getProperty("catalina.home");
+		String imageDir = rootDir + EAConstants.IMAGE_BASE_DIRECTORY;
+		return imageDir;
+	}
+	
+	public static String getImageFileExtension(MultipartFile imageFile) throws NoExtensionFoundException {
+		String arrStr[] = imageFile.getOriginalFilename().split(EAConstants.DOT_REGEX);
+		if(arrStr.length >= 2) {
+			return EAConstants.DOT + arrStr[arrStr.length - 1];
+		}else {
+			throw new NoExtensionFoundException();
+		}
+	}
+	
+	public static String getDomainUrl(HttpServletRequest request) {
+		return request.getScheme() + "://" + request.getServerName() + ":"
+				+request.getServerPort();
 	}
 }

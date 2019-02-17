@@ -13,23 +13,43 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.easyapper.eventsmicroservice.model.LocationDTO;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
+import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.model.EventDTO;
 import com.easyapper.eventsmicroservice.model.SubscribedEventDTO;
 import com.easyapper.eventsmicroservice.service.EventService;
 
 @Component
-public class Validator {
+public class EAValidator {
 	
 	private static EALogger logger = EALogger.getLogger();
 	
 	@Autowired
 	private EventService eventService;
+	
+	public boolean isValidImageFile(MultipartFile imageFile) {
+		try {
+			String fileExtension = EAUtil.getImageFileExtension(imageFile);
+			if(fileExtension.toLowerCase().equals(EAConstants.PNG_EXTENTION) ||
+					fileExtension.toLowerCase().equals(EAConstants.JPEG_EXTENTION)) {
+				return true;
+			}else {
+				logger.warning(EAConstants.PNG_EXTENTION + " & " + EAConstants.JPEG_EXTENTION);
+				return false;
+			}
+		} catch (NoExtensionFoundException e) {
+			logger.warning("No Image File extension found", e);
+			return false;
+		}
+	}
 	
 	public static boolean isValidEvent(EventDTO eventDto) {
 		if(!isValidEventType(eventDto.getEvent_type())) {

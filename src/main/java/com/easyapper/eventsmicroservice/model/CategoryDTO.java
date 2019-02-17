@@ -1,5 +1,7 @@
 package com.easyapper.eventsmicroservice.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CategoryDTO {
 
 	private int _id;
@@ -22,9 +24,11 @@ public class CategoryDTO {
 	public void set_id(int _id) {
 		this._id = _id;
 	}
+	@JsonProperty("category")
 	public String getName() {
 		return name;
 	}
+	@JsonProperty("category")
 	public void setName(String name) {
 		this.name = name;
 	}
