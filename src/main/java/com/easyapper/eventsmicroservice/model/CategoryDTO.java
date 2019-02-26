@@ -2,14 +2,14 @@ package com.easyapper.eventsmicroservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CategoryDTO {
+public class CategoryDto {
 
 	private int _id;
 	private String name;
 	private String image_url;
 	
 	//Constructor
-	public CategoryDTO(int _id, String name, String image_url) {
+	public CategoryDto(int _id, String name, String image_url) {
 		super();
 		this._id = _id;
 		this.name = name;

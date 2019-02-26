@@ -21,9 +21,9 @@ import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.model.UserEventListsContainerDTO;
-import com.easyapper.eventsmicroservice.model.EventDTO;
-import com.easyapper.eventsmicroservice.model.SubscribedEventDTO;
+import com.easyapper.eventsmicroservice.model.UserEventListsContainerDto;
+import com.easyapper.eventsmicroservice.model.EventDto;
+import com.easyapper.eventsmicroservice.model.SubscribedEventDto;
 import com.easyapper.eventsmicroservice.service.EventService;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 
@@ -44,10 +44,10 @@ public class EventApi {
 	 * @return
 	 */
 	@RequestMapping(value="", method=RequestMethod.GET)
-	public ResponseEntity<List<EventDTO>> getAllEvents( @RequestParam Map<String, String> paramMap){
+	public ResponseEntity<List<EventDto>> getAllEvents( @RequestParam Map<String, String> paramMap){
 		logger.info("In EventApi : getAllEvents");
 		logger.info("ParamMap : " + paramMap);
-		List<EventDTO> allPostEvents = null;
+		List<EventDto> allPostEvents = null;
 		try {
 			allPostEvents =  eventService.getAllPostedEvents(paramMap);
 		} catch (EasyApperDbException e) {
@@ -57,7 +57,7 @@ public class EventApi {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity(HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<List<EventDTO>>(allPostEvents, HttpStatus.OK);
+		return new ResponseEntity<List<EventDto>>(allPostEvents, HttpStatus.OK);
 	}
 	/**
 	 * Get posted event
@@ -65,9 +65,9 @@ public class EventApi {
 	 * @return
 	 */
 	@RequestMapping(value="{eventId}", method=RequestMethod.GET)
-	public ResponseEntity<EventDTO> getEvent(@PathVariable String eventId){
+	public ResponseEntity<EventDto> getEvent(@PathVariable String eventId){
 		logger.info("In EventApi : getAllEvents");
-		EventDTO postedEventDto = null;
+		EventDto postedEventDto = null;
 		try {
 			postedEventDto = eventService.getPostedEvent(eventId);
 		} catch (UserIdNotExistException e) {
@@ -80,7 +80,7 @@ public class EventApi {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 		}
-		return new ResponseEntity<EventDTO>(postedEventDto, HttpStatus.OK);
+		return new ResponseEntity<EventDto>(postedEventDto, HttpStatus.OK);
 	}
 	
 }

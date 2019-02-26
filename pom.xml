@@ -34,6 +34,13 @@
 			<scope>test</scope>
 		</dependency>
 		
+	<!-- Lambok -->
+		<dependency>
+	        <groupId>org.projectlombok</groupId>
+	        <artifactId>lombok</artifactId>
+	        <version>1.18.6</version>
+	        <scope>provided</scope>
+	    </dependency>	
 	<!-- 	Aspect  -->
 		<dependency>
 		  <groupId>org.springframework</groupId>

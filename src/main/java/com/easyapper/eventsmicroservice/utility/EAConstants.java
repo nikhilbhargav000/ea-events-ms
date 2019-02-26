@@ -11,10 +11,10 @@ import com.easyapper.eventsmicroservice.entity.AddressSubEntity;
 import com.easyapper.eventsmicroservice.entity.EventBookingSubEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.LocationSubEntity;
-import com.easyapper.eventsmicroservice.model.AddressDTO;
-import com.easyapper.eventsmicroservice.model.EventBookingDTO;
-import com.easyapper.eventsmicroservice.model.EventDTO;
-import com.easyapper.eventsmicroservice.model.LocationDTO;
+import com.easyapper.eventsmicroservice.model.AddressDto;
+import com.easyapper.eventsmicroservice.model.EventBookingDto;
+import com.easyapper.eventsmicroservice.model.EventDto;
+import com.easyapper.eventsmicroservice.model.LocationDto;
 
 public final class EAConstants {
 	
@@ -61,8 +61,7 @@ public final class EAConstants {
 	public static final String EVENT_POSTED_EVENT_ID_KEY = "posted_event_id";
 	public static final String EVENT_START_TIME_KEY = "event_start_time";
 	public static final String EVENT_END_TIME_KEY = "event_end_time";
-
-	public static final String DATE_FORMAT_PATTERN = "dd/MM/yyyy";
+	public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String TIME_FORMAT_PATTERN = "HH:mm";
 	public static final String TIME_STAMP_FORMAT_PATTERN = "yyyyMMdd:HHmmssSS";
 	public static final String UNDERSCORE = "_";

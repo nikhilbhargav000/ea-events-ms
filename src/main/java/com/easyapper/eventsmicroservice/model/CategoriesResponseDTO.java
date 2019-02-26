@@ -2,18 +2,18 @@ package com.easyapper.eventsmicroservice.model;
 
 import java.util.List;
 
-public class CategoriesResponseDTO {
-	List<CategoryDTO> categories;
+public class CategoriesResponseDto {
+	List<CategoryDto> categories;
 	//Constructor
-	public CategoriesResponseDTO(List<CategoryDTO> categories) {
+	public CategoriesResponseDto(List<CategoryDto> categories) {
 		super();
 		this.categories = categories;
 	}
 	//Getter and Setter
-	public List<CategoryDTO> getCategories() {
+	public List<CategoryDto> getCategories() {
 		return categories;
 	}
-	public void setCategories(List<CategoryDTO> categories) {
+	public void setCategories(List<CategoryDto> categories) {
 		this.categories = categories;
 	}
 	@Override

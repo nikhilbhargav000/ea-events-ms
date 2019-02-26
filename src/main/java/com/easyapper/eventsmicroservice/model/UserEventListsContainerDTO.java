@@ -2,28 +2,28 @@ package com.easyapper.eventsmicroservice.model;
 
 import java.util.List;
 
-public class UserEventListsContainerDTO {
+public class UserEventListsContainerDto {
 	
-	List<EventDTO> subscribed ;
-	List<EventDTO> posted ;
+	List<EventDto> subscribed ;
+	List<EventDto> posted ;
 	
 	//Constructor
-	public UserEventListsContainerDTO(List<EventDTO> subscribed, List<EventDTO> posted) {
+	public UserEventListsContainerDto(List<EventDto> subscribed, List<EventDto> posted) {
 		super();
 		this.subscribed = subscribed;
 		this.posted = posted;
 	}
 	//Getter & Setter
-	public List<EventDTO> getSubscribed() {
+	public List<EventDto> getSubscribed() {
 		return subscribed;
 	}
-	public void setSubscribed(List<EventDTO> subscribed) {
+	public void setSubscribed(List<EventDto> subscribed) {
 		this.subscribed = subscribed;
 	}
-	public List<EventDTO> getPosted() {
+	public List<EventDto> getPosted() {
 		return posted;
 	}
-	public void setPosted(List<EventDTO> posted) {
+	public void setPosted(List<EventDto> posted) {
 		this.posted = posted;
 	}
 	

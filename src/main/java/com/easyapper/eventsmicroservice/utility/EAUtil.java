@@ -15,10 +15,10 @@ import com.easyapper.eventsmicroservice.entity.LocationSubEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
-import com.easyapper.eventsmicroservice.model.AddressDTO;
-import com.easyapper.eventsmicroservice.model.EventBookingDTO;
-import com.easyapper.eventsmicroservice.model.LocationDTO;
-import com.easyapper.eventsmicroservice.model.EventDTO;
+import com.easyapper.eventsmicroservice.model.AddressDto;
+import com.easyapper.eventsmicroservice.model.EventBookingDto;
+import com.easyapper.eventsmicroservice.model.LocationDto;
+import com.easyapper.eventsmicroservice.model.EventDto;
 
 public class EAUtil {
 	
@@ -61,7 +61,7 @@ public class EAUtil {
 		
 	}
 	
-	public static SubscribedEventEntity getSubcribedEventEntity(EventDTO eventDto) {
+	public static SubscribedEventEntity getSubcribedEventEntity(EventDto eventDto) {
 		SubscribedEventEntity subscribedEventEntity = new SubscribedEventEntity(
 				eventDto.get_id(), eventDto.getUser_id(), eventDto.getPosted_event_id() 
 				, eventDto.getEvent_type(),
@@ -72,8 +72,8 @@ public class EAUtil {
 		return subscribedEventEntity;
 	}
 	
-	public static EventDTO getEventDto(SubscribedEventEntity subcEventEntity) {
-		EventDTO eventDto = new EventDTO(subcEventEntity.get_id(), subcEventEntity.getUser_id(),
+	public static EventDto getEventDto(SubscribedEventEntity subcEventEntity) {
+		EventDto eventDto = new EventDto(subcEventEntity.get_id(), subcEventEntity.getUser_id(),
 				subcEventEntity.getEvent_type(),
 				EAUtil.getDateFormatStr(subcEventEntity.getEvent_start_date()),
 				EAUtil.getDateFormatStr(subcEventEntity.getEvent_last_date()),
@@ -83,35 +83,36 @@ public class EAUtil {
 		return eventDto;
 	}
 	
-	public static EventDTO getEventDto(PostedEventEntity eventEntity) {
+	public static EventDto getEventDto(PostedEventEntity eventEntity) {
 		LocationSubEntity locationEntity = eventEntity.getEvent_location();
 		AddressSubEntity addressEntity = locationEntity.getAddress();
 		EventBookingSubEntity bookingEntity = eventEntity.getEvent_booking();
 		
-		AddressDTO addressDto = new AddressDTO(addressEntity.getId(), addressEntity.getCity(),
+		AddressDto addressDto = new AddressDto(addressEntity.getId(), addressEntity.getCity(),
 				addressEntity.getStreet(), addressEntity.getPin());
-		LocationDTO locationDto = new LocationDTO(locationEntity.getLongitude(),
+		LocationDto locationDto = new LocationDto(locationEntity.getLongitude(),
 				locationEntity.getLatitude(), addressDto);
-		EventBookingDTO bookingDto = new EventBookingDTO(bookingEntity.getUrl(),
+		EventBookingDto bookingDto = new EventBookingDto(bookingEntity.getUrl(),
 				bookingEntity.getInquiry_url());
 		String startDate = EAUtil.getDateFormatStr(eventEntity.getEvent_start_date());
 		String lastDate = EAUtil.getDateFormatStr(eventEntity.getEvent_last_date());
-		EventDTO eventDto = new EventDTO(eventEntity.get_id(), eventEntity.getUser_id(),
+		EventDto eventDto = new EventDto(eventEntity.get_id(), eventEntity.getUser_id(),
 				eventEntity.getEvent_type(),
 				eventEntity.getEvent_category(), eventEntity.getEvent_subcategory(),
 				locationDto, eventEntity.getOrganizer_email(), eventEntity.getEvent_name(),
 				eventEntity.getEvent_description(), eventEntity.getEvent_image_url(),
 				startDate, lastDate,
 				eventEntity.getEvent_min_age(), eventEntity.getEvent_min_age(),
-				eventEntity.getEvent_price(), bookingDto);
+				eventEntity.getEvent_price(), bookingDto, 
+				eventEntity.getOriginal_event());
 				
 		return eventDto;
 	}
 	
-	public static PostedEventEntity getPostedEventEntity(EventDTO evenDto) {
-		LocationDTO locationDto = evenDto.getEvent_location();
-		AddressDTO addressDto = locationDto.getAddress();
-		EventBookingDTO bookingDto = evenDto.getEvent_booking();
+	public static PostedEventEntity getPostedEventEntity(EventDto evenDto) {
+		LocationDto locationDto = evenDto.getEvent_location();
+		AddressDto addressDto = locationDto.getAddress();
+		EventBookingDto bookingDto = evenDto.getEvent_booking();
 		AddressSubEntity addressSubEntity = new AddressSubEntity(addressDto.getId(),
 				addressDto.getCity(), addressDto.getStreet(), addressDto.getPin());
 		LocationSubEntity locationSubEntity = new LocationSubEntity(
@@ -128,7 +129,7 @@ public class EAUtil {
 				evenDto.getEvent_image_url(), startDateObj,
 				lastDateObj, evenDto.getEvent_min_age(),
 				evenDto.getEvent_max_age(), evenDto.getEvent_price(),
-				bookingEntity);
+				bookingEntity, evenDto.getOriginal_event());
 		return eventEntity;
 	}
 

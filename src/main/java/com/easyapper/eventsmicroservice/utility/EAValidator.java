@@ -18,13 +18,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.easyapper.eventsmicroservice.model.LocationDTO;
+import com.easyapper.eventsmicroservice.model.LocationDto;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.model.EventDTO;
-import com.easyapper.eventsmicroservice.model.SubscribedEventDTO;
+import com.easyapper.eventsmicroservice.model.EventDto;
+import com.easyapper.eventsmicroservice.model.SubscribedEventDto;
 import com.easyapper.eventsmicroservice.service.EventService;
 
 @Component
@@ -51,7 +51,7 @@ public class EAValidator {
 		}
 	}
 	
-	public static boolean isValidEvent(EventDTO eventDto) {
+	public static boolean isValidEvent(EventDto eventDto) {
 		if(!isValidEventType(eventDto.getEvent_type())) {
 			return false;
 		}
@@ -67,7 +67,7 @@ public class EAValidator {
 		return false;
 	}
 	
-	public static boolean isValidPostedEvent(EventDTO eventDto) {
+	public static boolean isValidPostedEvent(EventDto eventDto) {
 		//Event Type
 		if(!isValidEventType(eventDto.getEvent_type())) {
 			return false;
@@ -107,7 +107,7 @@ public class EAValidator {
 		return true;
 	}
 	
-	public static boolean isValidSubscribedEvent(EventDTO eventDto) {
+	public static boolean isValidSubscribedEvent(EventDto eventDto) {
 		//Event Type
 		if(!isValidEventType(eventDto.getEvent_type())) {
 			return false;
@@ -244,7 +244,7 @@ public class EAValidator {
 		return true;
 	}
 	
-	private static boolean isValidEventLocation(LocationDTO locationDto) {
+	private static boolean isValidEventLocation(LocationDto locationDto) {
 		if(locationDto.getAddress() == null) {
 			logger.warning("address cannot be null");
 			return false;

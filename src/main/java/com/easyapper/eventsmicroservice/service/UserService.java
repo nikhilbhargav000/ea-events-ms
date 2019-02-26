@@ -37,11 +37,11 @@ import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.model.AddressDTO;
-import com.easyapper.eventsmicroservice.model.UserEventListsContainerDTO;
-import com.easyapper.eventsmicroservice.model.EventBookingDTO;
-import com.easyapper.eventsmicroservice.model.EventDTO;
-import com.easyapper.eventsmicroservice.model.LocationDTO;
+import com.easyapper.eventsmicroservice.model.AddressDto;
+import com.easyapper.eventsmicroservice.model.UserEventListsContainerDto;
+import com.easyapper.eventsmicroservice.model.EventBookingDto;
+import com.easyapper.eventsmicroservice.model.EventDto;
+import com.easyapper.eventsmicroservice.model.LocationDto;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 import com.easyapper.eventsmicroservice.utility.EAValidator;
@@ -61,7 +61,7 @@ public class UserService {
 	@Autowired
 	EAValidator validator;
 	
-	public String createPostedEvent(String userId, EventDTO eventDto) throws EasyApperDbException {
+	public String createPostedEvent(String userId, EventDto eventDto) throws EasyApperDbException {
 		PostedEventEntity eventEntity = EAUtil.getPostedEventEntity(eventDto);
 		String dbName = EAUtil.getEventCollectionName(userId);
 		String eventId = EAUtil.getPostedEventId(userId, dbSeqFinder.getNextSeqValue(dbName));
@@ -71,7 +71,7 @@ public class UserService {
 		return postedEventDao.insertEvent(eventEntity);
 	}
 	
-	public String createSubscribededEvent(String userId, EventDTO eventDto) throws EasyApperDbException, InvalidPostedEventIdException {
+	public String createSubscribededEvent(String userId, EventDto eventDto) throws EasyApperDbException, InvalidPostedEventIdException {
 		if(!validator.isValidPostedEventId(eventDto.getPosted_event_id())) {
 			throw new InvalidPostedEventIdException();
 		}
@@ -84,19 +84,19 @@ public class UserService {
 		return id;
 	}
 
-	public EventDTO getPostedEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {
+	public EventDto getPostedEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {
 		PostedEventEntity eventEntity = postedEventDao.getEvent(userId, eventId);
-		EventDTO eventDto = EAUtil.getEventDto(eventEntity);
+		EventDto eventDto = EAUtil.getEventDto(eventEntity);
 		return eventDto;
 	}
 	
-	public EventDTO getSubscribedEvent(String userId, String eventId) throws EasyApperDbException, SubscribedEventNotFoundException {
+	public EventDto getSubscribedEvent(String userId, String eventId) throws EasyApperDbException, SubscribedEventNotFoundException {
 		SubscribedEventEntity subcEventEntity = subscribedEventDao.getEvent(eventId, userId);
 		return EAUtil.getEventDto(subcEventEntity);
 	}
 
-	public EventDTO getEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, SubscribedEventNotFoundException {
-		EventDTO eventDto = null;
+	public EventDto getEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, SubscribedEventNotFoundException {
+		EventDto eventDto = null;
 		if(EAUtil.canBePostedEventId(eventId)) {
 			eventDto = this.getPostedEvent(userId, eventId);
 		}else if(EAUtil.canBeSubscribedEventId(eventId)) {
@@ -108,7 +108,7 @@ public class UserService {
 	}
 	
 	public void updateEvent(String userId, String eventId, 
-			EventDTO eventDto) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, InvalidPostedEventIdException {
+			EventDto eventDto) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, InvalidPostedEventIdException {
 		if(eventDto.getEvent_type().equals(EAConstants.EVENT_TYPE_POSTED)) {
 			PostedEventEntity eventEntity = EAUtil.getPostedEventEntity(eventDto);
 			eventEntity.set_id(null);
@@ -151,16 +151,16 @@ public class UserService {
 		return imgUrl;
 	}
 	
-	public UserEventListsContainerDTO getAllUserEvent(String userId, Map<String, String> paramMap) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
 		List<PostedEventEntity> postedEntityList  = postedEventDao.getAllEvent(userId);
-		List<EventDTO> postedDtoList = this.getPostedEventDtoList(postedEntityList);
+		List<EventDto> postedDtoList = this.getPostedEventDtoList(postedEntityList);
 		List<SubscribedEventEntity> subcEntityList = subscribedEventDao.getAllEvent(userId);
-		List<EventDTO> subcDtoList = this.getSubscribedEventDtoList(subcEntityList);		
+		List<EventDto> subcDtoList = this.getSubscribedEventDtoList(subcEntityList);		
 		this.filterEventLists(postedDtoList, subcDtoList, paramMap);
-		return new UserEventListsContainerDTO(subcDtoList, postedDtoList);
+		return new UserEventListsContainerDto(subcDtoList, postedDtoList);
 	}
 	
-	private void filterEventLists(List<EventDTO> postedDtoList, List<EventDTO> subcDtoList, 
+	private void filterEventLists(List<EventDto> postedDtoList, List<EventDto> subcDtoList, 
 			 Map<String, String> paramMap) throws InvalidDateFormatException, InvalidTimeFormatException {
 		if(paramMap.size() == 0) {
 			return;
@@ -169,10 +169,10 @@ public class UserService {
 		filterEventLists(subcDtoList, paramMap);
 	}
 	
-	private void filterEventLists(List<EventDTO> eventDtoList, Map<String, String> paramMap) throws InvalidDateFormatException, InvalidTimeFormatException{
-		List<EventDTO> toRemoveList = new ArrayList();
-		for(Iterator<EventDTO> itrList = eventDtoList.iterator(); itrList.hasNext() ; ) {
-			EventDTO eventDto = itrList.next();
+	private void filterEventLists(List<EventDto> eventDtoList, Map<String, String> paramMap) throws InvalidDateFormatException, InvalidTimeFormatException{
+		List<EventDto> toRemoveList = new ArrayList();
+		for(Iterator<EventDto> itrList = eventDtoList.iterator(); itrList.hasNext() ; ) {
+			EventDto eventDto = itrList.next();
 			if(containsEventType(paramMap.get(EAConstants.EVENT_TYPE_KEY), eventDto) && 
 					containsCategory(paramMap.get(EAConstants.EVENT_CATEGORY_KEY), eventDto) &&
 					containsSubCategory(paramMap.get(EAConstants.EVENT_SUB_CATEGORY_KEY), eventDto) &&
@@ -199,7 +199,7 @@ public class UserService {
 		}
 		eventDtoList.removeAll(toRemoveList);
 	}
-	private boolean containsStartTime(String checkVal, EventDTO eventDto) throws InvalidTimeFormatException {
+	private boolean containsStartTime(String checkVal, EventDto eventDto) throws InvalidTimeFormatException {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_start_time() == null) {
@@ -215,7 +215,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsEndTime(String checkVal, EventDTO eventDto) throws InvalidTimeFormatException {
+	private boolean containsEndTime(String checkVal, EventDto eventDto) throws InvalidTimeFormatException {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_end_time() == null) {
@@ -232,7 +232,7 @@ public class UserService {
 		return false;
 	}
 	
-	private boolean containsLastDate(String checkVal, EventDTO eventDto) throws InvalidDateFormatException {
+	private boolean containsLastDate(String checkVal, EventDto eventDto) throws InvalidDateFormatException {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_last_date() == null) {
@@ -248,7 +248,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsStartDate(String checkVal, EventDTO eventDto) throws InvalidDateFormatException {
+	private boolean containsStartDate(String checkVal, EventDto eventDto) throws InvalidDateFormatException {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_start_date() == null) {
@@ -264,7 +264,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsPostedEventId(String checkVal, EventDTO eventDto) {
+	private boolean containsPostedEventId(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getPosted_event_id() == null) {
@@ -275,7 +275,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsEventType(String checkVal, EventDTO eventDto) {
+	private boolean containsEventType(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_type() == null) {
@@ -286,7 +286,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsCategory(String checkVal, EventDTO eventDto) {
+	private boolean containsCategory(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_category() == null) {
@@ -297,7 +297,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsSubCategory(String checkVal, EventDTO eventDto) {
+	private boolean containsSubCategory(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_subcategory() == null) {
@@ -308,7 +308,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsLongitude(String checkVal, EventDTO eventDto) {
+	private boolean containsLongitude(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_location().getLongitude() == null) {
@@ -319,7 +319,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsLatitude(String checkVal, EventDTO eventDto) {
+	private boolean containsLatitude(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_location().getLatitude() == null) {
@@ -330,7 +330,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsCity(String checkVal, EventDTO eventDto) {
+	private boolean containsCity(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_location().getAddress().getCity() == null) {
@@ -341,7 +341,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsStreet(String checkVal, EventDTO eventDto) {
+	private boolean containsStreet(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_location().getAddress().getStreet() == null) {
@@ -352,7 +352,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsPin(String checkVal, EventDTO eventDto) {
+	private boolean containsPin(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		} if(eventDto.getEvent_location().getAddress().getPin() == null) {
@@ -363,7 +363,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsOrganiserEmail(String checkVal, EventDTO eventDto) {
+	private boolean containsOrganiserEmail(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getOrganizer_email() == null) {
@@ -377,7 +377,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsEventName(String checkVal, EventDTO eventDto) {
+	private boolean containsEventName(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		}if(eventDto.getEvent_name() == null) {
@@ -388,7 +388,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsEventDescription(String checkVal, EventDTO eventDto) {
+	private boolean containsEventDescription(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		} if(eventDto.getEvent_description() == null) {
@@ -399,7 +399,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsEventMinAge(String checkVal, EventDTO eventDto) {
+	private boolean containsEventMinAge(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		} if(eventDto.getEvent_min_age() == null) {
@@ -410,7 +410,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsEventMaxAge(String checkVal, EventDTO eventDto) {
+	private boolean containsEventMaxAge(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		} if(eventDto.getEvent_max_age() == null) {
@@ -421,7 +421,7 @@ public class UserService {
 		}
 		return false;
 	}
-	private boolean containsEventPrice(String checkVal, EventDTO eventDto) {
+	private boolean containsEventPrice(String checkVal, EventDto eventDto) {
 		if(checkVal == null) {
 			return true;
 		} if(eventDto.getEvent_price() == null) {
@@ -433,15 +433,15 @@ public class UserService {
 		return false;
 	}
 	
-	private List<EventDTO> getPostedEventDtoList(List<PostedEventEntity> eventEntityList){
-		List<EventDTO> eventDtoList = new ArrayList<>();
+	private List<EventDto> getPostedEventDtoList(List<PostedEventEntity> eventEntityList){
+		List<EventDto> eventDtoList = new ArrayList<>();
 		for(PostedEventEntity eventEntity : eventEntityList) {
 			eventDtoList.add(EAUtil.getEventDto(eventEntity));
 		}
 		return eventDtoList;
 	}
-	private List<EventDTO> getSubscribedEventDtoList(List<SubscribedEventEntity> subcEventEntityList){
-		List<EventDTO> eventDtoList = new ArrayList<>();
+	private List<EventDto> getSubscribedEventDtoList(List<SubscribedEventEntity> subcEventEntityList){
+		List<EventDto> eventDtoList = new ArrayList<>();
 		for(SubscribedEventEntity subcEventEntity : subcEventEntityList) {
 			eventDtoList.add(EAUtil.getEventDto(subcEventEntity));
 		}

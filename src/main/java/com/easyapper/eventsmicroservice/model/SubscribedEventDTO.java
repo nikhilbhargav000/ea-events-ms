@@ -3,7 +3,7 @@ package com.easyapper.eventsmicroservice.model;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
 
-public class SubscribedEventDTO {
+public class SubscribedEventDto {
 	
 	@Null(message="_id should be null")
 	private String _id;
@@ -16,7 +16,7 @@ public class SubscribedEventDTO {
 	private String event_type;
 	
 	//Constructor
-	public SubscribedEventDTO(@Null(message = "_id should be null") String _id, String subscriber_user_id,
+	public SubscribedEventDto(@Null(message = "_id should be null") String _id, String subscriber_user_id,
 			@Null(message = "postedEventId should be null") String posted_event_id, String start_date_time,
 			String end_date_time, @NotBlank(message = "event_type should not be blank or null") String event_type) {
 		super();

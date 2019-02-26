@@ -2,8 +2,16 @@ package com.easyapper.eventsmicroservice.api;
 
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.soap.MimeHeader;
+
+import org.apache.tomcat.util.http.MimeHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,19 +34,23 @@ public class ImageApi {
 	ImageService imageService;
 	
 	@RequestMapping(value="/{imageName}", method=RequestMethod.GET)
-	public ResponseEntity<byte[]> getImage(
+	public void getImage(HttpServletResponse response, 
 			@PathVariable(value="imageName", required=true) String imageName) {
 		logger.info("In ImageApi : getImage : " + imageName);
-		byte[] byteArr;
+		byte[] byteArr = null;
 		try {
 			byteArr = imageService.getImage(imageName);
+			response.getOutputStream().write(byteArr);
 		} catch (IOException e) {
 			logger.warning(e.getMessage(), e);
-			return new ResponseEntity<byte[]>(HttpStatus.SERVICE_UNAVAILABLE);
+			response.setStatus(HttpStatus.SERVICE_UNAVAILABLE.value());
+			return;
 		} catch (InvalidImageFileNameException e) {
 			logger.warning(e.getMessage(), e);
-			return new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
 		}
-		return new ResponseEntity<byte[]>(byteArr, HttpStatus.OK);
+		response.setContentType(MediaType.IMAGE_PNG_VALUE);
+		response.setStatus(HttpStatus.OK.value());
 	}
 }

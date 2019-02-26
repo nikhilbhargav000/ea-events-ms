@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
-import com.easyapper.eventsmicroservice.model.CategoriesResponseDTO;
-import com.easyapper.eventsmicroservice.model.CategoryDTO;
+import com.easyapper.eventsmicroservice.model.CategoriesResponseDto;
+import com.easyapper.eventsmicroservice.model.CategoryDto;
 import com.easyapper.eventsmicroservice.service.CategoryService;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 
@@ -27,17 +27,17 @@ public class CategoryApi {
 	EALogger logger;
 	
 	@RequestMapping(value="", method=RequestMethod.GET)
-	public ResponseEntity<CategoriesResponseDTO> getCategories(){
+	public ResponseEntity<CategoriesResponseDto> getCategories(){
 		logger.info("In CategoryApi : getCategories");
-		List<CategoryDTO> categoryList;
+		List<CategoryDto> categoryList;
 		try {
 			categoryList = categoryService.getCatorgies();
 		} catch (EasyApperDbException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 		}
-		CategoriesResponseDTO responseDto = new CategoriesResponseDTO(categoryList);
-		return new ResponseEntity<CategoriesResponseDTO>(responseDto, HttpStatus.OK);
+		CategoriesResponseDto responseDto = new CategoriesResponseDto(categoryList);
+		return new ResponseEntity<CategoriesResponseDto>(responseDto, HttpStatus.OK);
 	}
 	
 }

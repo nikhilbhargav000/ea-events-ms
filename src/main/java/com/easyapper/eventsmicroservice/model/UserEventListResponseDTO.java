@@ -1,17 +1,17 @@
 package com.easyapper.eventsmicroservice.model;
 
-public class UserEventListResponseDTO {
-	UserEventListsContainerDTO events;
+public class UserEventListResponseDto {
+	UserEventListsContainerDto events;
 	//Constructor
-	public UserEventListResponseDTO(UserEventListsContainerDTO events) {
+	public UserEventListResponseDto(UserEventListsContainerDto events) {
 		super();
 		this.events = events;
 	}
 	//Getter & Setter
-	public UserEventListsContainerDTO getEvents() {
+	public UserEventListsContainerDto getEvents() {
 		return events;
 	}
-	public void setEvents(UserEventListsContainerDTO events) {
+	public void setEvents(UserEventListsContainerDto events) {
 		this.events = events;
 	}
 	@Override

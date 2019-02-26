@@ -13,8 +13,8 @@ import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.model.UserEventListsContainerDTO;
-import com.easyapper.eventsmicroservice.model.EventDTO;
+import com.easyapper.eventsmicroservice.model.UserEventListsContainerDto;
+import com.easyapper.eventsmicroservice.model.EventDto;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 
@@ -27,23 +27,23 @@ public class EventService {
 	@Autowired
 	UserService userService;
 	
-	public List<EventDTO> getAllPostedEvents(Map<String, String> paramMap) throws EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+	public List<EventDto> getAllPostedEvents(Map<String, String> paramMap) throws EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
 		List<String> eventCollectionNameList = eventDao.getAllEventCollectionName();
 		List<String> userIdList = this.getUserIdList(eventCollectionNameList);
-		List<EventDTO> allPostedEventList = new ArrayList();
+		List<EventDto> allPostedEventList = new ArrayList();
 		for(String userId : userIdList) {
-			UserEventListsContainerDTO userAllEventResponse = userService.getAllUserEvent(userId, paramMap);
+			UserEventListsContainerDto userAllEventResponse = userService.getAllUserEvent(userId, paramMap);
 			allPostedEventList.addAll(userAllEventResponse.getPosted());
 		}
 		return allPostedEventList;
 	}
 	
-	public EventDTO getPostedEvent(String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {
+	public EventDto getPostedEvent(String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {
 		String userId = EAUtil.getUserId(eventId);
 		if(userId == null) {
 			throw new UserIdNotExistException();
 		}
-		EventDTO eventDto = userService.getPostedEvent(userId, eventId);
+		EventDto eventDto = userService.getPostedEvent(userId, eventId);
 		return eventDto;
 	}
 

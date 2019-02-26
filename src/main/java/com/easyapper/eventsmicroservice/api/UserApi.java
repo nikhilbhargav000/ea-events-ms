@@ -30,10 +30,10 @@ import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.model.EventDTO;
-import com.easyapper.eventsmicroservice.model.SubscribedEventDTO;
-import com.easyapper.eventsmicroservice.model.UserEventListResponseDTO;
-import com.easyapper.eventsmicroservice.model.UserEventListsContainerDTO;
+import com.easyapper.eventsmicroservice.model.EventDto;
+import com.easyapper.eventsmicroservice.model.SubscribedEventDto;
+import com.easyapper.eventsmicroservice.model.UserEventListResponseDto;
+import com.easyapper.eventsmicroservice.model.UserEventListsContainerDto;
 import com.easyapper.eventsmicroservice.service.UserService;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
@@ -62,7 +62,7 @@ public class UserApi {
 	 */
 	@RequestMapping(value="{userId}/events/", method=RequestMethod.POST)
 	public ResponseEntity< String > createPostEvent(@PathVariable("userId") String userId, 
-			@RequestBody @Valid EventDTO eventPostDto, BindingResult result) {
+			@RequestBody @Valid EventDto eventPostDto, BindingResult result) {
 		logger.info("In UserApi : createPostEvent");
 		logger.info(eventPostDto.toString());
 		if(result.hasErrors() ) {
@@ -92,7 +92,7 @@ public class UserApi {
 	 */
 	@RequestMapping(value="{userId}/subscribeEvent", method=RequestMethod.POST)
 	public ResponseEntity<String> createSubscribedEvent(
-			@PathVariable("userId") String userId, @RequestBody @Valid EventDTO eventDto, 
+			@PathVariable("userId") String userId, @RequestBody @Valid EventDto eventDto, 
 			BindingResult result ){
 		logger.info("In UserApi : createSubscribedEvent");
 		logger.info(eventDto.toString());
@@ -117,12 +117,12 @@ public class UserApi {
 	}
 	
 	@RequestMapping(value="{userId}/events/{eventId}", method=RequestMethod.GET)
-	public ResponseEntity<EventDTO> getUserEvents(@PathVariable("userId") String userId,
+	public ResponseEntity<EventDto> getUserEvents(@PathVariable("userId") String userId,
 			@PathVariable("eventId") String eventId) {
 		logger.info("In UserApi : getUserEvents");
 		logger.info("In UserApi : getUserEvents : userId : " + userId );
 		logger.info("In UserApi : getUserEvents : eventId : " + eventId );
-		EventDTO eventObj = null;
+		EventDto eventObj = null;
 		try {
 			eventObj = userService.getEvent(userId, eventId);
 		}
@@ -139,13 +139,13 @@ public class UserApi {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 		}
-		return new ResponseEntity<EventDTO>(eventObj, HttpStatus.OK);
+		return new ResponseEntity<EventDto>(eventObj, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="{userId}/events/{eventId}", method=RequestMethod.PUT)
 	public ResponseEntity<String> updateEvent(@PathVariable("userId") String userId, 
 			@PathVariable("eventId") String eventId, 
-			@RequestBody @Valid EventDTO eventUpdateDto, BindingResult result) {
+			@RequestBody @Valid EventDto eventUpdateDto, BindingResult result) {
 		logger.info("In UserApi : updateEvent");
 		logger.info(eventUpdateDto.toString());
 		if(result.hasErrors()) {
@@ -199,11 +199,11 @@ public class UserApi {
 	}
 	
 	@RequestMapping(value="{userId}/events", method=RequestMethod.GET)
-	public ResponseEntity<UserEventListResponseDTO> getAllUserEvents(@PathVariable("userId") String userId, 
+	public ResponseEntity<UserEventListResponseDto> getAllUserEvents(@PathVariable("userId") String userId, 
 			@RequestParam Map<String, String> paramMap) {
 		logger.info("In UserApi : getAllUserEvents");
 		logger.info("ParamMap : " + paramMap);
-		UserEventListsContainerDTO allEventResponse = null;
+		UserEventListsContainerDto allEventResponse = null;
 		try {
 			allEventResponse = userService.getAllUserEvent(userId, paramMap);
 		} catch (UserIdNotExistException e) {
@@ -219,8 +219,8 @@ public class UserApi {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity(HttpStatus.BAD_REQUEST);
 		}
-		UserEventListResponseDTO responseDto = new UserEventListResponseDTO(allEventResponse);
-		return new ResponseEntity<UserEventListResponseDTO>(responseDto, HttpStatus.OK);
+		UserEventListResponseDto responseDto = new UserEventListResponseDto(allEventResponse);
+		return new ResponseEntity<UserEventListResponseDto>(responseDto, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="{userId}/image", method=RequestMethod.POST)

@@ -2,39 +2,32 @@ package com.easyapper.eventsmicroservice.model;
 
 import javax.validation.constraints.NotNull;
 
-public class LocationDTO {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter @Setter
+@ToString
+public class LocationDto implements Cloneable {
 	private String longitude;
 	private String latitude;
-	private AddressDTO address;
+	private AddressDto address;
 	//Constructor
-	public LocationDTO(String longitude, String latitude, AddressDTO address) {
+	public LocationDto(String longitude, String latitude, AddressDto address) {
 		super();
 		this.longitude = longitude;
 		this.latitude = latitude;
 		this.address = address;
 	}
-	//Getter and Setters
-	public String getLongitude() {
-		return longitude;
+	public LocationDto() {
+		this.address = new AddressDto();
 	}
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
-	}
-	public String getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
-	}
-	public AddressDTO getAddress() {
-		return address;
-	}
-	public void setAddress(AddressDTO address) {
-		this.address = address;
-	}
-	@Override
-	public String toString() {
-		return "LocationDTO [longitude=" + longitude + ", latitude=" + latitude + ", address=" + address + "]";
+	
+	//Deep Copy
+	public LocationDto clone() throws CloneNotSupportedException {
+		LocationDto clonedObj = (LocationDto) super.clone();
+		clonedObj.address = (AddressDto) this.address.clone();
+		return clonedObj;
 	}
 	
 }
