@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,11 +22,16 @@ import org.springframework.web.multipart.MultipartFile;
 import com.easyapper.eventsmicroservice.model.LocationDto;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
+import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
+import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
+import com.easyapper.eventsmicroservice.model.CategoryDto;
 import com.easyapper.eventsmicroservice.model.EventDto;
 import com.easyapper.eventsmicroservice.model.SubscribedEventDto;
+import com.easyapper.eventsmicroservice.service.CategoryService;
 import com.easyapper.eventsmicroservice.service.EventService;
+import com.easyapper.eventsmicroservice.service.UserService;
 
 @Component
 public class EAValidator {
@@ -34,6 +40,12 @@ public class EAValidator {
 	
 	@Autowired
 	private EventService eventService;
+	
+	@Autowired 
+	CategoryService categoryService;
+	
+	@Autowired
+	UserService userService;
 	
 	public boolean isValidImageFile(MultipartFile imageFile) {
 		try {
@@ -51,7 +63,7 @@ public class EAValidator {
 		}
 	}
 	
-	public static boolean isValidEvent(EventDto eventDto) {
+	public boolean isValidEvent(EventDto eventDto) throws EasyApperDbException {
 		if(!isValidEventType(eventDto.getEvent_type())) {
 			return false;
 		}
@@ -67,7 +79,7 @@ public class EAValidator {
 		return false;
 	}
 	
-	public static boolean isValidPostedEvent(EventDto eventDto) {
+	public boolean isValidPostedEvent(EventDto eventDto) throws EasyApperDbException {
 		//Event Type
 		if(!isValidEventType(eventDto.getEvent_type())) {
 			return false;
@@ -102,6 +114,11 @@ public class EAValidator {
 		//PostedEventId
 		if(eventDto.getPosted_event_id() != null) {
 			logger.warning("posted_event_id should be null for posted events");
+			return false;
+		}
+		//Category
+		if(!isValidCategory(eventDto.getEvent_category())) {
+			logger.warning("Invalid category : " + eventDto.getEvent_category());
 			return false;
 		}
 		return true;
@@ -152,6 +169,33 @@ public class EAValidator {
 			return false;
 		}
 		return true;
+	}
+	
+	public boolean postedEventExists(String userId, EventDto eventDto) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+		List<EventDto> eventList = userService.getAllUserEvent(userId).getPosted();
+		String eventHashKey = EAUtil.getHashString_ForPostedEvent(eventDto);
+		for(EventDto curEventDto : eventList) {
+			String curEventHaskKey = EAUtil.getHashString_ForPostedEvent(curEventDto);
+			if(eventHashKey.equals(curEventHaskKey)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isValidCategory(String category) throws EasyApperDbException {
+		if(category == null) {
+			logger.warning("Category can not be null");
+			return false;
+		}
+		List<CategoryDto> categoryList = categoryService.getCatorgies();
+		for(CategoryDto categoryDto : categoryList) {
+			String curCategory = categoryDto.getName();
+			if(curCategory.equals(category)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean isValidPostedEventId(String postedEventId) throws EasyApperDbException {

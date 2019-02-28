@@ -9,10 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import com.easyapper.eventsmicroservice.entity.CategoryEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
+import com.easyapper.eventsmicroservice.utility.EALogger;
 
 @Repository
 public class CategoryDaoImpl implements CategoryDao {
 
+	@Autowired
+	EALogger logger;
+	
 	@Autowired
 	MongoTemplate mongoTemplate;
 	
@@ -21,6 +25,7 @@ public class CategoryDaoImpl implements CategoryDao {
 		try {
 			return mongoTemplate.findAll(CategoryEntity.class);
 		}catch(Exception e) {
+			logger.warning(e.getMessage(), e);
 			throw new EasyApperDbException();
 		}
 	}

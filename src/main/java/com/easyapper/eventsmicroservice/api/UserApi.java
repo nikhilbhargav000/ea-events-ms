@@ -28,6 +28,7 @@ import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidPostedEventIdException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
+import com.easyapper.eventsmicroservice.exception.PostedEventExistsException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.model.EventDto;
@@ -68,16 +69,22 @@ public class UserApi {
 		if(result.hasErrors() ) {
 			result.getAllErrors().stream().forEach(e -> logger.warning(e.getDefaultMessage()));
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-		if(!EAValidator.isValidPostedEvent(eventPostDto)) {
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
+		}	
 		String id = null;
 		try {
+			if(!validator.isValidPostedEvent(eventPostDto)) {
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
 			id = userService.createPostedEvent(userId, eventPostDto);
+		} catch (PostedEventExistsException e) {
+			logger.warning(e.getMessage(), e);
+			return new ResponseEntity<String>(HttpStatus.CONFLICT);
 		} catch (EasyApperDbException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<String>(HttpStatus.SERVICE_UNAVAILABLE);
+		} catch (InvalidDateFormatException | InvalidTimeFormatException e) {
+			logger.warning(e.getMessage(), e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<String>(id, HttpStatus.CREATED); 
 	}
@@ -153,10 +160,10 @@ public class UserApi {
 			return new ResponseEntity<String>(result.getAllErrors().get(0).getDefaultMessage(), 
 					HttpStatus.BAD_REQUEST);
 		}
-		if(!EAValidator.isValidEvent(eventUpdateDto)) {
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
 		try {
+			if(!validator.isValidEvent(eventUpdateDto)) {
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
 			userService.updateEvent(userId, eventId, eventUpdateDto);
 		} catch (UserIdNotExistException e) {
 			logger.warning(e.getMessage(), e);

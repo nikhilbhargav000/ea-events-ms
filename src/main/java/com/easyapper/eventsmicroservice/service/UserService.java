@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidPostedEventIdException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
+import com.easyapper.eventsmicroservice.exception.PostedEventExistsException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.model.AddressDto;
@@ -61,7 +63,10 @@ public class UserService {
 	@Autowired
 	EAValidator validator;
 	
-	public String createPostedEvent(String userId, EventDto eventDto) throws EasyApperDbException {
+	public String createPostedEvent(String userId, EventDto eventDto) throws EasyApperDbException, PostedEventExistsException, InvalidDateFormatException, InvalidTimeFormatException {
+		if(validator.postedEventExists(userId, eventDto)) {
+			throw new PostedEventExistsException();
+		}
 		PostedEventEntity eventEntity = EAUtil.getPostedEventEntity(eventDto);
 		String dbName = EAUtil.getEventCollectionName(userId);
 		String eventId = EAUtil.getPostedEventId(userId, dbSeqFinder.getNextSeqValue(dbName));
@@ -149,6 +154,10 @@ public class UserService {
 		String imgUrl = EAUtil.getDomainUrl(request) + File.separator + 
 				EAConstants.IMAGE_API_MAPPING + File.separator + serverFileName;
 		return imgUrl;
+	}
+	
+	public UserEventListsContainerDto getAllUserEvent(String userId) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+		return this.getAllUserEvent(userId, new HashMap<>());
 	}
 	
 	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {

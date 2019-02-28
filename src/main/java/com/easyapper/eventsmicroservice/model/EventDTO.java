@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import com.easyapper.eventsmicroservice.model.originalevent.OrglEventDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +35,7 @@ public class EventDto implements Cloneable{
 	private String event_price;
 	private EventBookingDto event_booking;
 	@ToString.Exclude 
+	@JsonIgnore
 	private OrglEventDto original_event;
 	//For subscribed
 	private String posted_event_id;

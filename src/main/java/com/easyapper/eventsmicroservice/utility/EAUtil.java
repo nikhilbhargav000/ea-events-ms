@@ -133,6 +133,26 @@ public class EAUtil {
 		return eventEntity;
 	}
 
+	public static String getHashString_ForPostedEvent(EventDto eventDto) {
+		StringBuilder stringBuilder = new StringBuilder();
+		if(eventDto.getEvent_category() != null)
+			stringBuilder.append(eventDto.getEvent_category());
+		if(eventDto.getEvent_subcategory() != null)
+			stringBuilder.append(eventDto.getEvent_subcategory());
+		if(eventDto.getEvent_name() != null)
+			stringBuilder.append(eventDto.getEvent_name());
+		if(eventDto.getEvent_description() != null)
+			stringBuilder.append(eventDto.getEvent_description());
+		if(eventDto.getEvent_location().getAddress().getCity() != null)
+			stringBuilder.append(eventDto.getEvent_location().getAddress().getCity());
+		if(eventDto.getEvent_location().getAddress().getStreet() != null)
+			stringBuilder.append(eventDto.getEvent_location().getAddress().getStreet());
+		if(eventDto.getEvent_start_date() != null)
+			stringBuilder.append(eventDto.getEvent_start_date());
+		if(eventDto.getEvent_last_date() != null)
+			stringBuilder.append(eventDto.getEvent_last_date());
+		return stringBuilder.toString();
+	}
 	
 	public static String getTimeStampFormatStr(Timestamp timeStamp) {
 		SimpleDateFormat formatter = new SimpleDateFormat(EAConstants.TIME_STAMP_FORMAT_PATTERN);
