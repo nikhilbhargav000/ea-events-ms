@@ -207,12 +207,15 @@ public class UserApi {
 	
 	@RequestMapping(value="{userId}/events", method=RequestMethod.GET)
 	public ResponseEntity<UserEventListResponseDto> getAllUserEvents(@PathVariable("userId") String userId, 
-			@RequestParam Map<String, String> paramMap) {
+			@RequestParam Map<String, String> paramMap, 
+			@RequestParam(name="page", required=false, defaultValue="1") int page, 
+			@RequestParam(name="total", required=false, defaultValue="10") int total) {
 		logger.info("In UserApi : getAllUserEvents");
-		logger.info("ParamMap : " + paramMap);
+		logger.info("ParamMap : " + paramMap + " | page : " + page +  ""
+				+ " | total : " + total );
 		UserEventListsContainerDto allEventResponse = null;
 		try {
-			allEventResponse = userService.getAllUserEvent(userId, paramMap);
+			allEventResponse = userService.getAllUserEvent(userId, paramMap, page, total);
 		} catch (UserIdNotExistException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity(HttpStatus.NOT_FOUND);

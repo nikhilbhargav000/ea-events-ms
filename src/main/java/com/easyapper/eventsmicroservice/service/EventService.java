@@ -27,7 +27,8 @@ public class EventService {
 	@Autowired
 	UserService userService;
 	
-	public List<EventDto> getAllPostedEvents(Map<String, String> paramMap) throws EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+	public List<EventDto> getAllPostedEvents(Map<String, String> paramMap, int page, 
+			int total) throws EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
 		List<String> eventCollectionNameList = eventDao.getAllEventCollectionName();
 		List<String> userIdList = this.getUserIdList(eventCollectionNameList);
 		List<EventDto> allPostedEventList = new ArrayList();
@@ -35,7 +36,8 @@ public class EventService {
 			UserEventListsContainerDto userAllEventResponse = userService.getAllUserEvent(userId, paramMap);
 			allPostedEventList.addAll(userAllEventResponse.getPosted());
 		}
-		return allPostedEventList;
+		List<EventDto> pagedPostedEventList = EAUtil.getPaginationList(page, total, allPostedEventList);
+		return pagedPostedEventList;
 	}
 	
 	public EventDto getPostedEvent(String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {

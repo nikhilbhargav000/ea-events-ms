@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
@@ -27,11 +28,13 @@ public class CategoryApi {
 	EALogger logger;
 	
 	@RequestMapping(value="", method=RequestMethod.GET)
-	public ResponseEntity<CategoriesResponseDto> getCategories(){
-		logger.info("In CategoryApi : getCategories");
+	public ResponseEntity<CategoriesResponseDto> getCategories(@RequestParam(name="page", required=false, defaultValue="1") int page, 
+			@RequestParam(name="total", required=false, defaultValue="10") int total){
+		logger.info("In CategoryApi : getCategories" + " | page : " + page +  ""
+				+ " | total : " + total );
 		List<CategoryDto> categoryList;
 		try {
-			categoryList = categoryService.getCatorgies();
+			categoryList = categoryService.getCatorgies(page, total);
 		} catch (EasyApperDbException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);

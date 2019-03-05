@@ -44,12 +44,15 @@ public class EventApi {
 	 * @return
 	 */
 	@RequestMapping(value="", method=RequestMethod.GET)
-	public ResponseEntity<List<EventDto>> getAllEvents( @RequestParam Map<String, String> paramMap){
+	public ResponseEntity<List<EventDto>> getAllEvents( @RequestParam Map<String, String> paramMap, 
+			@RequestParam(name="page", required=false, defaultValue="1") int page, 
+			@RequestParam(name="total", required=false, defaultValue="10") int total){
 		logger.info("In EventApi : getAllEvents");
-		logger.info("ParamMap : " + paramMap);
+		logger.info("ParamMap : " + paramMap + " | page : " + page +  ""
+				+ " | total : " + total );
 		List<EventDto> allPostEvents = null;
 		try {
-			allPostEvents =  eventService.getAllPostedEvents(paramMap);
+			allPostEvents =  eventService.getAllPostedEvents(paramMap, page, total);
 		} catch (EasyApperDbException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);

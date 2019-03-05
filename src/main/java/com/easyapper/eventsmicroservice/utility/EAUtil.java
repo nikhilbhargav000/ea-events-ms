@@ -3,7 +3,10 @@ package com.easyapper.eventsmicroservice.utility;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,6 +62,19 @@ public class EAUtil {
 			return null;
 		}
 		
+	}
+	
+	public static <T> List<T> getPaginationList(int page, int total, List<T> list) {
+		int firstIndex = (page - 1) * total; 
+		int lastIndex = (page * total) - 1;
+		List<T> pagedList = new ArrayList<T>();
+		if(firstIndex < list.size()) {
+			for(int index = firstIndex ; (index <= lastIndex) && (index < list.size()) ;
+					index++) {
+				pagedList.add(list.get(index));
+			}
+		}
+		return pagedList;
 	}
 	
 	public static SubscribedEventEntity getSubcribedEventEntity(EventDto eventDto) {

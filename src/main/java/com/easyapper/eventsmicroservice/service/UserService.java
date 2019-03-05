@@ -160,6 +160,14 @@ public class UserService {
 		return this.getAllUserEvent(userId, new HashMap<>());
 	}
 	
+	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap, 
+			int page, int total) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+		UserEventListsContainerDto userEventListContainer = getAllUserEvent(userId, paramMap);
+		userEventListContainer.setPosted( EAUtil.getPaginationList(page, total, userEventListContainer.getPosted()));
+		userEventListContainer.setSubscribed( EAUtil.getPaginationList(page, total, userEventListContainer.getSubscribed()));
+		return userEventListContainer;
+	}
+	
 	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
 		List<PostedEventEntity> postedEntityList  = postedEventDao.getAllEvent(userId);
 		List<EventDto> postedDtoList = this.getPostedEventDtoList(postedEntityList);
