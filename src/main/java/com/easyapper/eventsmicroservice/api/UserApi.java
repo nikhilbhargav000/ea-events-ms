@@ -209,13 +209,17 @@ public class UserApi {
 	public ResponseEntity<UserEventListResponseDto> getAllUserEvents(@PathVariable("userId") String userId, 
 			@RequestParam Map<String, String> paramMap, 
 			@RequestParam(name="page", required=false, defaultValue="1") int page, 
-			@RequestParam(name="total", required=false, defaultValue="10") int total) {
+			@RequestParam(name="size", required=false, defaultValue="10") int size) {
 		logger.info("In UserApi : getAllUserEvents");
 		logger.info("ParamMap : " + paramMap + " | page : " + page +  ""
-				+ " | total : " + total );
+				+ " | size : " + size );
 		UserEventListsContainerDto allEventResponse = null;
 		try {
-			allEventResponse = userService.getAllUserEvent(userId, paramMap, page, total);
+			if(!validator.isValidPageRequest(page, size)) {
+				logger.warning("Invalid page and size value");
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			allEventResponse = userService.getAllUserEvent(userId, paramMap, page, size);
 		} catch (UserIdNotExistException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity(HttpStatus.NOT_FOUND);

@@ -34,7 +34,6 @@ public final class EAConstants {
 	public static final String PNG_EXTENTION = ".png";
 	public static final String JPEG_EXTENTION = ".jpeg";
 	
-
 	public static final String EVENT_TYPE_KEY = "event_type";
 	public static final String EVENT_CATEGORY_KEY = "event_category";
 	public static final String EVENT_SUB_CATEGORY_KEY = "event_subcategory";
@@ -67,4 +66,6 @@ public final class EAConstants {
 	public static final String UNDERSCORE = "_";
 	public static final String DOT_REGEX = "\\.";
 	public static final String DOT = ".";
+
+	public static final int INVALID_PAGINATION_VALUE = -1;
 }

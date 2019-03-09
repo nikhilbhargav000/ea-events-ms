@@ -63,6 +63,13 @@ public class EAValidator {
 		}
 	}
 	
+	public boolean isValidPageRequest(int page, int size) {
+		if(page >= 1 && size >= 1) {
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean isValidEvent(EventDto eventDto) throws EasyApperDbException {
 		if(!isValidEventType(eventDto.getEvent_type())) {
 			return false;
@@ -172,13 +179,17 @@ public class EAValidator {
 	}
 	
 	public boolean postedEventExists(String userId, EventDto eventDto) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
-		List<EventDto> eventList = userService.getAllUserEvent(userId).getPosted();
 		String eventHashKey = EAUtil.getHashString_ForPostedEvent(eventDto);
-		for(EventDto curEventDto : eventList) {
-			String curEventHaskKey = EAUtil.getHashString_ForPostedEvent(curEventDto);
-			if(eventHashKey.equals(curEventHaskKey)) {
-				return true;
+		int page = 1, size = 200 ;
+		List<EventDto> eventList = userService.getAllUserEvent(userId, page, size).getPosted();
+		for(page = 2 ; eventList.size() > 0 ; page++) {
+			for(EventDto curEventDto : eventList) {
+				String curEventHaskKey = EAUtil.getHashString_ForPostedEvent(curEventDto);
+				if(eventHashKey.equals(curEventHaskKey)) {
+					return true;
+				}
 			}
+			eventList = userService.getAllUserEvent(userId, page, size).getPosted();
 		}
 		return false;
 	}

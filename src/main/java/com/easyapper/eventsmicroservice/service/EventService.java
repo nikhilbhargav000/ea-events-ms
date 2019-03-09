@@ -27,17 +27,28 @@ public class EventService {
 	@Autowired
 	UserService userService;
 	
-	public List<EventDto> getAllPostedEvents(Map<String, String> paramMap, int page, 
-			int total) throws EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+	public List<EventDto> getAllPostedEvents(Map<String, String> paramMap, int page, int size) 
+			throws EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
 		List<String> eventCollectionNameList = eventDao.getAllEventCollectionName();
 		List<String> userIdList = this.getUserIdList(eventCollectionNameList);
 		List<EventDto> allPostedEventList = new ArrayList();
+		long toSkip = (page-1) * size;
+		int toPickSize = size;
 		for(String userId : userIdList) {
-			UserEventListsContainerDto userAllEventResponse = userService.getAllUserEvent(userId, paramMap);
-			allPostedEventList.addAll(userAllEventResponse.getPosted());
+			List<EventDto> curPostedEventList = userService.getAllUserEvent(userId, paramMap, 1, toPickSize, toSkip).getPosted();
+			if(curPostedEventList.size() == 0) {
+				toSkip -= (userService.getPostedEventsCount(userId));
+			}else if(curPostedEventList.size() > 0) {
+				toSkip -= (userService.getPostedEventsCount(userId));
+				toPickSize = size - curPostedEventList.size();
+			}
+			allPostedEventList.addAll(curPostedEventList);
+			if(toPickSize <= 0) {
+				break;
+			}
 		}
-		List<EventDto> pagedPostedEventList = EAUtil.getPaginationList(page, total, allPostedEventList);
-		return pagedPostedEventList;
+//		List<EventDto> pagedPostedEventList = EAUtil.getPaginationList(page, size, allPostedEventList);
+		return allPostedEventList;
 	}
 	
 	public EventDto getPostedEvent(String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {

@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.easyapper.eventsmicroservice.entity.AddressSubEntity;
@@ -64,18 +65,18 @@ public class EAUtil {
 		
 	}
 	
-	public static <T> List<T> getPaginationList(int page, int total, List<T> list) {
-		int firstIndex = (page - 1) * total; 
-		int lastIndex = (page * total) - 1;
-		List<T> pagedList = new ArrayList<T>();
-		if(firstIndex < list.size()) {
-			for(int index = firstIndex ; (index <= lastIndex) && (index < list.size()) ;
-					index++) {
-				pagedList.add(list.get(index));
-			}
-		}
-		return pagedList;
-	}
+//	public static <T> List<T> getPaginationList(int page, int total, List<T> list) {
+//		int firstIndex = (page - 1) * total; 
+//		int lastIndex = (page * total) - 1;
+//		List<T> pagedList = new ArrayList<T>();
+//		if(firstIndex < list.size()) {
+//			for(int index = firstIndex ; (index <= lastIndex) && (index < list.size()) ;
+//					index++) {
+//				pagedList.add(list.get(index));
+//			}
+//		}
+//		return pagedList;
+//	}
 	
 	public static SubscribedEventEntity getSubcribedEventEntity(EventDto eventDto) {
 		SubscribedEventEntity subscribedEventEntity = new SubscribedEventEntity(
@@ -220,5 +221,11 @@ public class EAUtil {
 	public static String getDomainUrl(HttpServletRequest request) {
 		return request.getScheme() + "://" + request.getServerName() + ":"
 				+request.getServerPort();
+	}
+	
+	public static void setPaginationInQuery(Query query, int page, int size, long skip){
+		long totalskip = ((page - 1) * size) + skip;
+		query.skip(totalskip);
+		query.limit(size);
 	}
 }

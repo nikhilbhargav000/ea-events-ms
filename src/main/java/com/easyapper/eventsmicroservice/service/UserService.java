@@ -156,25 +156,70 @@ public class UserService {
 		return imgUrl;
 	}
 	
-	public UserEventListsContainerDto getAllUserEvent(String userId) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
-		return this.getAllUserEvent(userId, new HashMap<>());
+	
+//	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap, int page, int total) 
+//			throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+//		UserEventListsContainerDto userEventListContainer = getAllUserEvent(userId, paramMap);
+//		userEventListContainer.setPosted( EAUtil.getPaginationList(page, total, userEventListContainer.getPosted()));
+//		userEventListContainer.setSubscribed( EAUtil.getPaginationList(page, total, userEventListContainer.getSubscribed()));
+//		return userEventListContainer;
+//	}
+
+	/**
+	 * Used in Validating similar posted events
+	 * @param userId
+	 * @param page
+	 * @param size
+	 * @return
+	 * @throws UserIdNotExistException
+	 * @throws EasyApperDbException
+	 * @throws InvalidDateFormatException
+	 * @throws InvalidTimeFormatException
+	 */
+	public UserEventListsContainerDto getAllUserEvent(String userId, int page, int size) 
+			throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+		return this.getAllUserEvent(userId, new HashMap<>(), page, size, 0);
 	}
 	
-	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap, 
-			int page, int total) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
-		UserEventListsContainerDto userEventListContainer = getAllUserEvent(userId, paramMap);
-		userEventListContainer.setPosted( EAUtil.getPaginationList(page, total, userEventListContainer.getPosted()));
-		userEventListContainer.setSubscribed( EAUtil.getPaginationList(page, total, userEventListContainer.getSubscribed()));
-		return userEventListContainer;
+	/**
+	 *  Used By UserApi
+	 * @param userId
+	 * @param paramMap
+	 * @param page
+	 * @param size
+	 * @return
+	 * @throws UserIdNotExistException
+	 * @throws EasyApperDbException
+	 * @throws InvalidDateFormatException
+	 * @throws InvalidTimeFormatException
+	 */
+	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap, int page, int size) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+		return getAllUserEvent(userId, paramMap, page, size, 0);
 	}
 	
-	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
-		List<PostedEventEntity> postedEntityList  = postedEventDao.getAllEvent(userId);
+	/**
+	 * Used by EventsApi
+	 * @param userId
+	 * @return
+	 * @throws UserIdNotExistException
+	 * @throws EasyApperDbException
+	 * @throws InvalidDateFormatException
+	 * @throws InvalidTimeFormatException
+	 */
+	public UserEventListsContainerDto getAllUserEvent(String userId, Map<String, String> paramMap, int page, int size, long skip) 
+			throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+		List<PostedEventEntity> postedEntityList  = postedEventDao.getAllEvent(userId, paramMap, page, size, skip);
 		List<EventDto> postedDtoList = this.getPostedEventDtoList(postedEntityList);
-		List<SubscribedEventEntity> subcEntityList = subscribedEventDao.getAllEvent(userId);
+		List<SubscribedEventEntity> subcEntityList = subscribedEventDao.getAllEvent(userId, paramMap, page, size, skip);
 		List<EventDto> subcDtoList = this.getSubscribedEventDtoList(subcEntityList);		
+		
 		this.filterEventLists(postedDtoList, subcDtoList, paramMap);
+		
 		return new UserEventListsContainerDto(subcDtoList, postedDtoList);
+	}
+	
+	public long getPostedEventsCount(String userId) throws EasyApperDbException {
+		return postedEventDao.getEventsCount(userId);
 	}
 	
 	private void filterEventLists(List<EventDto> postedDtoList, List<EventDto> subcDtoList, 

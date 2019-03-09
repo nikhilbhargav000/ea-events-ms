@@ -10,10 +10,18 @@ import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 
 public interface PostedEventDao {
 
-	public String insertEvent(PostedEventEntity eventEntity) throws EasyApperDbException ;
-	public PostedEventEntity getEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
-	public List<PostedEventEntity> getAllEvent(String userId) throws UserIdNotExistException, EasyApperDbException ;
-	public void updateEvent(String userId, String eventId, PostedEventEntity updateEventEntity) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
-	public void deleteEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
-	public List<String> getAllEventCollectionName() throws EasyApperDbException ;
+	public String insertEvent(PostedEventEntity eventEntity) 
+			throws EasyApperDbException ;
+	public PostedEventEntity getEvent(String userId, String eventId) 
+			throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
+	public List<PostedEventEntity> getAllEvent(String userId, Map<String, String> paramMap, int page, int size, long skip)
+			throws UserIdNotExistException, EasyApperDbException ;
+	public void updateEvent(String userId, String eventId, PostedEventEntity updateEventEntity) 
+			throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
+	public void deleteEvent(String userId, String eventId) 
+			throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
+	public List<String> getAllEventCollectionName() 
+			throws EasyApperDbException ;
+	public long getEventsCount(String userId) 
+			throws EasyApperDbException;
 }

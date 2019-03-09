@@ -10,6 +10,7 @@ import javax.swing.text.html.parser.Entity;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -35,6 +36,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	@Autowired
 	MongoTemplate mongoTemplate;
 	
+	@Override
 	public String insertEvent(PostedEventEntity eventEntity) throws EasyApperDbException {
 		String userId = eventEntity.getUser_id();
 		String collectionName = EAUtil.getEventCollectionName(userId);
@@ -53,6 +55,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		return eventEntity.get_id();
 	}
 	
+	@Override
 	public PostedEventEntity getEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {
 		PostedEventEntity eventEntity = null;
 		try {
@@ -78,12 +81,20 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		return eventEntity;
 	}
 	
-	public List<PostedEventEntity> getAllEvent(String userId) throws UserIdNotExistException, EasyApperDbException {
+	@Override
+	public List<PostedEventEntity> getAllEvent(String userId, Map<String, String> paramMap, int page, int size, long skip)
+			throws UserIdNotExistException, EasyApperDbException {
 		List<PostedEventEntity> allEventList = new ArrayList<>();
 		try {
 			String collectionName = EAUtil.getEventCollectionName(userId);
+			//Pagination
+			Query query = new Query();
+			EAUtil.setPaginationInQuery(query, page, size, skip);
+			//Search
+			
 			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
-				List<PostedEventEntity> eventList = mongoTemplate.findAll(PostedEventEntity.class, collectionName);
+				List<PostedEventEntity> eventList = mongoTemplate.find(query, PostedEventEntity.class, collectionName);
+//				List<PostedEventEntity> eventList = mongoTemplate.findAll(PostedEventEntity.class, collectionName);
 				allEventList.addAll(eventList);
 			}else {
 				return new ArrayList<>();
@@ -95,6 +106,25 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		return allEventList;
 	}
 	
+	@Override
+	public long getEventsCount(String userId) 
+			throws EasyApperDbException{
+		List<PostedEventEntity> allEventList = new ArrayList<>();
+		long count = 0;
+		try {
+			String collectionName = EAUtil.getEventCollectionName(userId);
+			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
+				Query query = new Query();
+				mongoTemplate.count(query, collectionName);
+			}
+		}catch(Exception e) {
+			logger.warning(e.getMessage(), e);
+			throw new EasyApperDbException();
+		}
+		return count;
+	}
+	
+	@Override
 	public void updateEvent(String userId, String eventId, 
 			PostedEventEntity updateEventEntity) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {
 		String collectionName = EAUtil.getEventCollectionName(userId);
@@ -125,6 +155,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		}
 	}
 	
+	@Override
 	public void deleteEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException {
 		PostedEventEntity eventEntity = this.getEvent(userId, eventId);
 		if(eventEntity != null) {
@@ -133,6 +164,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		}
 	}
 	
+	@Override
 	public List<String> getAllEventCollectionName() throws EasyApperDbException{
 		List<String> eventCollectionList = new ArrayList<>();
 		try {
@@ -149,5 +181,5 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		}
 		return eventCollectionList;
 	}
-
+	
 }

@@ -10,6 +10,7 @@ import com.easyapper.eventsmicroservice.dao.CategoryDao;
 import com.easyapper.eventsmicroservice.entity.CategoryEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.model.CategoryDto;
+import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 
 @Service
@@ -18,13 +19,20 @@ public class CategoryService {
 	@Autowired
 	CategoryDao categoryDao;
 
-	public List<CategoryDto> getCatorgies(int page, int total) throws EasyApperDbException{
-		return EAUtil.getPaginationList(page, total, this.getCatorgies());
+	public List<CategoryDto> getCatorgies() throws EasyApperDbException{
+		return this.getCatorgies(EAConstants.INVALID_PAGINATION_VALUE, 
+				EAConstants.INVALID_PAGINATION_VALUE);
 	}
 	
-	public List<CategoryDto> getCatorgies() throws EasyApperDbException{
+	public List<CategoryDto> getCatorgies(int page, int total) throws EasyApperDbException{
 		List<CategoryDto> categoriesList = new ArrayList<>();
-		List<CategoryEntity> categoryEntityList =  categoryDao.getAllCategories();
+		List<CategoryEntity> categoryEntityList = null;
+		if(page != EAConstants.INVALID_PAGINATION_VALUE &&
+				total != EAConstants.INVALID_PAGINATION_VALUE) {
+			categoryEntityList = categoryDao.getAllCategories(page, total);
+		}else {
+			categoryEntityList = categoryDao.getAllCategories();
+		}
 		for(CategoryEntity curCategoryEntity : categoryEntityList) {
 			CategoryDto categoryDto = new CategoryDto(curCategoryEntity.get_id(), 
 					curCategoryEntity.getName(), curCategoryEntity.getImage_url());

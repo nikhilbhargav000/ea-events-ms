@@ -2,19 +2,23 @@ package com.easyapper.eventsmicroservice.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.utility.EALogger;
+import com.easyapper.eventsmicroservice.utility.EAUtil;
 
 @Repository
 public class SubscribedEventDaoImpl implements SubscribedEventDao {
@@ -77,11 +81,17 @@ public class SubscribedEventDaoImpl implements SubscribedEventDao {
 		}
 	}
 	
-	public List<SubscribedEventEntity> getAllEvent(String userId) throws EasyApperDbException{
+	@Override
+	public List<SubscribedEventEntity> getAllEvent(String userId, Map<String, String> paramMap, int page, int size, long skip) 
+			throws EasyApperDbException{
 		Query query = new Query();
 		query.addCriteria(Criteria.where("user_id").is(userId));
+		//Pagination
+		EAUtil.setPaginationInQuery(query, page, size, skip);
+		//Search
+		
 		List<SubscribedEventEntity> eventList = null;
-		try {
+		try {	
 			eventList = mongoTemplate.find(query, SubscribedEventEntity.class);
 		}catch(Exception e) {
 			logger.warning(e.getMessage(), e);
