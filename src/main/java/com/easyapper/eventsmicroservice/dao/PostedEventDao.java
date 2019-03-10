@@ -6,6 +6,8 @@ import java.util.Map;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
+import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
+import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 
 public interface PostedEventDao {
@@ -15,7 +17,7 @@ public interface PostedEventDao {
 	public PostedEventEntity getEvent(String userId, String eventId) 
 			throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
 	public List<PostedEventEntity> getAllEvent(String userId, Map<String, String> paramMap, int page, int size, long skip)
-			throws UserIdNotExistException, EasyApperDbException ;
+			throws UserIdNotExistException, InvalidTimeFormatException, InvalidDateFormatException, EasyApperDbException ;
 	public void updateEvent(String userId, String eventId, PostedEventEntity updateEventEntity) 
 			throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
 	public void deleteEvent(String userId, String eventId) 

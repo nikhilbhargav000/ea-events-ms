@@ -1,6 +1,7 @@
 package com.easyapper.eventsmicroservice.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +22,14 @@ import org.springframework.stereotype.Repository;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
+import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
+import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
+import com.easyapper.eventsmicroservice.helper.DaoHepler;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
+import com.easyapper.eventsmicroservice.utility.EAValidator;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.client.MongoCollection;
@@ -34,6 +39,12 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	
 	@Autowired
 	EALogger logger;
+	
+	@Autowired
+	EAValidator validator;
+	
+	@Autowired
+	DaoHepler daoHelper;
 	
 	@Autowired
 	MongoTemplate mongoTemplate;
@@ -85,15 +96,15 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	
 	@Override
 	public List<PostedEventEntity> getAllEvent(String userId, Map<String, String> paramMap, int page, int size, long skip)
-			throws UserIdNotExistException, EasyApperDbException {
+			throws UserIdNotExistException, EasyApperDbException, InvalidTimeFormatException, InvalidDateFormatException {
 		List<PostedEventEntity> allEventList = new ArrayList<>();
+		//Pagination
+		Query query = new Query();
+		EAUtil.setPaginationInQuery(query, page, size, skip);
+		//Search
+		this.addSearchParams(query, paramMap);
 		try {
 			String collectionName = EAUtil.getEventCollectionName(userId);
-			//Pagination
-			Query query = new Query();
-			EAUtil.setPaginationInQuery(query, page, size, skip);
-			//Search
-			this.addSearchParams(query, paramMap);
 			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
 				List<PostedEventEntity> eventList = mongoTemplate.find(query, PostedEventEntity.class, collectionName);
 				allEventList.addAll(eventList);
@@ -107,35 +118,29 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		return allEventList;
 	}
 	
-	private void addSearchParams(Query query, final Map<String, String> paramMap) {
-		this.addCriteriaForSearch(EAConstants.EVENT_TYPE_KEY, "event_type", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_CATEGORY_KEY, "event_category", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_SUB_CATEGORY_KEY, "event_subcategory", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_LOCATION_LONGITUDE_KEY, "event_location.longitude", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_LOCATION_LATITUDE_KEY, "event_location.latitude", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_CITY_KEY, "event_location.address.city", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_STREET_KEY, "event_location.address.street", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_PIN_KEY, "event_location.address.pin", query, paramMap);
+	private void addSearchParams(Query query, final Map<String, String> paramMap) throws InvalidTimeFormatException, InvalidDateFormatException {
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_TYPE_KEY, "event_type", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_CATEGORY_KEY, "event_category", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_SUB_CATEGORY_KEY, "event_subcategory", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_LOCATION_LONGITUDE_KEY, "event_location.longitude", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_LOCATION_LATITUDE_KEY, "event_location.latitude", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_CITY_KEY, "event_location.address.city", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_STREET_KEY, "event_location.address.street", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_PIN_KEY, "event_location.address.pin", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_ORGANIZER_EMAIL_KEY, "organizer_email", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_NAME_KEY, "event_name", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_DESCRIBTION_KEY, "event_description", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_IMAGE_URL_KEY, "event_image_url", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_PRICE_KEY, "event_price", query, paramMap);
 		
-		this.addCriteriaForSearch(EAConstants.EVENT_ORGANIZER_EMAIL_KEY, "organizer_email", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_NAME_KEY, "event_name", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_DESCRIBTION_KEY, "event_description", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_IMAGE_URL_KEY, "event_image_url", query, paramMap);
-		this.addCriteriaForSearch(EAConstants.EVENT_PRICE_KEY, "event_price", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_BOOKING_URL_KEY, "event_booking.url", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_BOOKING_INQUIRY_URL_KEY, "event_booking.inquiry_url", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_MIN_AGE_KEY, "event_min_age", query, paramMap);
+		daoHelper.addCriteriaForSearch(EAConstants.EVENT_MAX_AGE_KEY, "event_max_age", query, paramMap);
 		
+//		daoHelper.addCriteriaForSearch(EAConstants.EVENT_START_DATE_KEY, "event_start_date", query, paramMap);
+//		daoHelper.addCriteriaForSearch(EAConstants.EVENT_LAST_DATE_KEY, "event_last_date", query, paramMap);
 		
-//		this.addCriteriaForSearch(EAConstants.EVENT_BOOKING_URL_KEY, "event_booking.url", query, paramMap);
-//		this.addCriteriaForSearch(EAConstants.EVENT_BOOKING_INQUIRY_URL_KEY, "event_booking.inquiry_url", query, paramMap);
-//		this.addCriteriaForSearch(EAConstants.EVENT_MIN_AGE_KEY, "event_min_age", query, paramMap);
-//		this.addCriteriaForSearch(EAConstants.EVENT_MAX_AGE_KEY, "event_max_age", query, paramMap);
-	}
-	
-	private void addCriteriaForSearch(final String paramKey, final String dbEntityField, Query query, final Map<String, String> paramMap) {
-		
-		if(paramMap.get(paramKey) != null) {
-			Pattern alikeCaseInsentitvePattern = Pattern.compile(paramMap.get(paramKey) , Pattern.CASE_INSENSITIVE);
-			query.addCriteria(Criteria.where(dbEntityField).regex(alikeCaseInsentitvePattern));
-		}
 	}
 	
 	@Override

@@ -119,7 +119,7 @@ public class EAUtil {
 				locationDto, eventEntity.getOrganizer_email(), eventEntity.getEvent_name(),
 				eventEntity.getEvent_description(), eventEntity.getEvent_image_url(),
 				startDate, lastDate,
-				eventEntity.getEvent_min_age(), eventEntity.getEvent_min_age(),
+				eventEntity.getEvent_min_age(), eventEntity.getEvent_max_age(),
 				eventEntity.getEvent_price(), bookingDto, 
 				eventEntity.getOriginal_event());
 				
