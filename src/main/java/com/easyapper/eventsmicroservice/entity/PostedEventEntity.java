@@ -5,10 +5,6 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
-
-import com.easyapper.eventsmicroservice.model.AddressDto;
-import com.easyapper.eventsmicroservice.model.LocationDto;
 import com.easyapper.eventsmicroservice.model.originalevent.OrglEventDto;
 
 import lombok.Getter;

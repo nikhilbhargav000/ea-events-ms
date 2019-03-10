@@ -3,18 +3,12 @@ package com.easyapper.eventsmicroservice.api;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
+import com.easyapper.eventsmicroservice.entity.EventListWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
@@ -27,6 +21,7 @@ import com.easyapper.eventsmicroservice.model.SubscribedEventDto;
 import com.easyapper.eventsmicroservice.service.EventService;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 
+@CrossOrigin
 @Controller
 @RequestMapping("events")
 public class EventApi {
@@ -44,7 +39,7 @@ public class EventApi {
 	 * @return
 	 */
 	@RequestMapping(value="", method=RequestMethod.GET)
-	public ResponseEntity<List<EventDto>> getAllEvents( @RequestParam Map<String, String> paramMap, 
+	public ResponseEntity<EventListWrapper> getAllEvents( @RequestParam Map<String, String> paramMap, 
 			@RequestParam(name="page", required=false, defaultValue="1") int page, 
 			@RequestParam(name="total", required=false, defaultValue="10") int total){
 		logger.info("In EventApi : getAllEvents");
@@ -60,7 +55,12 @@ public class EventApi {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity(HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<List<EventDto>>(allPostEvents, HttpStatus.OK);
+
+		EventListWrapper wrapper = new EventListWrapper();
+		wrapper.setEvents(allPostEvents);
+
+		//return new ResponseEntity<List<EventDTO>>(allPostEvents, HttpStatus.OK);
+		return new ResponseEntity<>(wrapper, HttpStatus.OK);
 	}
 	/**
 	 * Get posted event

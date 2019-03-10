@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.swing.text.html.parser.Entity;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -91,10 +93,9 @@ public class PostedEventDaoImpl implements PostedEventDao{
 			Query query = new Query();
 			EAUtil.setPaginationInQuery(query, page, size, skip);
 			//Search
-			
+			this.addSearchParams(query, paramMap);
 			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
 				List<PostedEventEntity> eventList = mongoTemplate.find(query, PostedEventEntity.class, collectionName);
-//				List<PostedEventEntity> eventList = mongoTemplate.findAll(PostedEventEntity.class, collectionName);
 				allEventList.addAll(eventList);
 			}else {
 				return new ArrayList<>();
@@ -104,6 +105,37 @@ public class PostedEventDaoImpl implements PostedEventDao{
 			throw new EasyApperDbException();
 		}
 		return allEventList;
+	}
+	
+	private void addSearchParams(Query query, final Map<String, String> paramMap) {
+		this.addCriteriaForSearch(EAConstants.EVENT_TYPE_KEY, "event_type", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_CATEGORY_KEY, "event_category", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_SUB_CATEGORY_KEY, "event_subcategory", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_LOCATION_LONGITUDE_KEY, "event_location.longitude", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_LOCATION_LATITUDE_KEY, "event_location.latitude", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_CITY_KEY, "event_location.address.city", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_STREET_KEY, "event_location.address.street", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_ADDRESS_PIN_KEY, "event_location.address.pin", query, paramMap);
+		
+		this.addCriteriaForSearch(EAConstants.EVENT_ORGANIZER_EMAIL_KEY, "organizer_email", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_NAME_KEY, "event_name", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_DESCRIBTION_KEY, "event_description", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_IMAGE_URL_KEY, "event_image_url", query, paramMap);
+		this.addCriteriaForSearch(EAConstants.EVENT_PRICE_KEY, "event_price", query, paramMap);
+		
+		
+//		this.addCriteriaForSearch(EAConstants.EVENT_BOOKING_URL_KEY, "event_booking.url", query, paramMap);
+//		this.addCriteriaForSearch(EAConstants.EVENT_BOOKING_INQUIRY_URL_KEY, "event_booking.inquiry_url", query, paramMap);
+//		this.addCriteriaForSearch(EAConstants.EVENT_MIN_AGE_KEY, "event_min_age", query, paramMap);
+//		this.addCriteriaForSearch(EAConstants.EVENT_MAX_AGE_KEY, "event_max_age", query, paramMap);
+	}
+	
+	private void addCriteriaForSearch(final String paramKey, final String dbEntityField, Query query, final Map<String, String> paramMap) {
+		
+		if(paramMap.get(paramKey) != null) {
+			Pattern alikeCaseInsentitvePattern = Pattern.compile(paramMap.get(paramKey) , Pattern.CASE_INSENSITIVE);
+			query.addCriteria(Criteria.where(dbEntityField).regex(alikeCaseInsentitvePattern));
+		}
 	}
 	
 	@Override

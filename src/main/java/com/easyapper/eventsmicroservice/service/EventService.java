@@ -40,14 +40,13 @@ public class EventService {
 				toSkip -= (userService.getPostedEventsCount(userId));
 			}else if(curPostedEventList.size() > 0) {
 				toSkip -= (userService.getPostedEventsCount(userId));
-				toPickSize = size - curPostedEventList.size();
+				toPickSize -= curPostedEventList.size();
 			}
 			allPostedEventList.addAll(curPostedEventList);
 			if(toPickSize <= 0) {
 				break;
 			}
 		}
-//		List<EventDto> pagedPostedEventList = EAUtil.getPaginationList(page, size, allPostedEventList);
 		return allPostedEventList;
 	}
 	
