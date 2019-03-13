@@ -6,6 +6,8 @@ import java.util.Map;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
+import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
+import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 
 public interface SubscribedEventDao {
@@ -19,5 +21,5 @@ public interface SubscribedEventDao {
 	public void deleteEvent(String eventId, String userId) 
 			throws EasyApperDbException, SubscribedEventNotFoundException ;
 	public List<SubscribedEventEntity> getAllEvent(String userId, Map<String, String> paramMap, int page, int size, long skip) 
-			throws EasyApperDbException;
+			throws EasyApperDbException, InvalidTimeFormatException, InvalidDateFormatException ;
 }

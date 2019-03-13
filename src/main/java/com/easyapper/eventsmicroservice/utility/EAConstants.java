@@ -49,8 +49,10 @@ public final class EAConstants {
 	public static final String EVENT_NAME_KEY = "event_name";
 	public static final String EVENT_DESCRIBTION_KEY = "event_description";
 	public static final String EVENT_IMAGE_URL_KEY = "event_image_url";
-	public static final String EVENT_START_DATE_KEY = "event_start_date";
-	public static final String EVENT_LAST_DATE_KEY = "event_last_date";
+	public static final String EVENT_START_DATE_TO_KEY = "event_start_date_to";
+	public static final String EVENT_START_DATE_FROM_KEY = "event_start_date_from";
+	public static final String EVENT_LAST_DATE_TO_KEY = "event_last_date_to";
+	public static final String EVENT_LAST_DATE_FROM_KEY = "event_last_date_from";
 	public static final String EVENT_MIN_AGE_KEY = "event_min_age";
 	public static final String EVENT_MAX_AGE_KEY = "event_max_age";
 	public static final String EVENT_PRICE_KEY = "event_price";
@@ -58,8 +60,11 @@ public final class EAConstants {
 	public static final String EVENT_BOOKING_URL_KEY = "url";
 	public static final String EVENT_BOOKING_INQUIRY_URL_KEY = "inquiry_url";
 	public static final String EVENT_POSTED_EVENT_ID_KEY = "posted_event_id";
-	public static final String EVENT_START_TIME_KEY = "event_start_time";
-	public static final String EVENT_END_TIME_KEY = "event_end_time";
+	public static final String EVENT_START_TIME_FROM_KEY = "event_start_time_from";
+	public static final String EVENT_START_TIME_TO_KEY = "event_start_time_to";
+	public static final String EVENT_END_TIME_FROM_KEY = "event_end_time_from";
+	public static final String EVENT_END_TIME_TO_KEY = "event_end_time_to";
+	
 	public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String TIME_FORMAT_PATTERN = "HH:mm";
 	public static final String TIME_STAMP_FORMAT_PATTERN = "yyyyMMdd:HHmmssSS";

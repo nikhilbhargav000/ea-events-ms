@@ -203,9 +203,6 @@ public class UserService {
 		List<EventDto> postedDtoList = this.getPostedEventDtoList(postedEntityList);
 		List<SubscribedEventEntity> subcEntityList = subscribedEventDao.getAllEvent(userId, paramMap, page, size, skip);
 		List<EventDto> subcDtoList = this.getSubscribedEventDtoList(subcEntityList);		
-		
-//		this.filterEventLists(postedDtoList, subcDtoList, paramMap);
-		
 		return new UserEventListsContainerDto(subcDtoList, postedDtoList);
 	}
 	

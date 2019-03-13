@@ -20,35 +20,51 @@ public class DaoHepler {
 	
 	@Autowired
 	EAValidator validator;
-	
-	public void addCriteriaForSearch(final String paramKey, final String dbEntityField, Query query, final Map<String, String> paramMap) throws InvalidTimeFormatException, InvalidDateFormatException {
-		if(paramKey.equals(EAConstants.EVENT_START_DATE_KEY) || 
-				paramKey.equals(EAConstants.EVENT_LAST_DATE_KEY)) {
-			if(paramMap.get(paramKey) != null) {
-				if(validator.isValidDate(paramMap.get(paramKey))) {
-					Date paramDateObj = EAUtil.getDateFormatObj(paramMap.get(paramKey));
-					query.addCriteria(Criteria.where(dbEntityField).is(paramDateObj));
-				}else {
-					throw new InvalidDateFormatException();
-				}
-			}
-		}
-		else if(paramKey.equals(EAConstants.EVENT_START_TIME_KEY) || 
-				paramKey.equals(EAConstants.EVENT_END_TIME_KEY)) {
-			if(paramMap.get(paramKey) != null) {
-				if(validator.isValidDate(paramMap.get(paramKey))) {
-					
-				}else {
-					throw new InvalidTimeFormatException();
-				}
-			}
-		}
-		else {	//For String Values
-			if(paramMap.get(paramKey) != null) {
-				Pattern alikeCaseInsentitvePattern = Pattern.compile(Pattern.quote(paramMap.get(paramKey)) , Pattern.CASE_INSENSITIVE);
-				query.addCriteria(Criteria.where(dbEntityField).regex(alikeCaseInsentitvePattern));
-			}
+
+	public void addSearchCriteriaForString(final String paramKey, final String dbEntityField, Query query, final Map<String, String> paramMap) throws InvalidTimeFormatException, InvalidDateFormatException {
+		if(paramMap.get(paramKey) != null) {
+			Pattern alikeCaseInsentitvePattern = Pattern.compile(Pattern.quote(paramMap.get(paramKey)) , Pattern.CASE_INSENSITIVE);
+			query.addCriteria(Criteria.where(dbEntityField).regex(alikeCaseInsentitvePattern));
 		}
 	}
+	
+	public void addSearchCriteriaForDate(final String paramFromDateKey, final String paramToDateKey, final String dbEntityField, Query query, final Map<String, String> paramMap) throws InvalidDateFormatException {
+		if(paramMap.get(paramFromDateKey) != null && 
+				paramMap.get(paramToDateKey) != null && 
+				validator.isValidDate(paramMap.get(paramFromDateKey)) &&
+				validator.isValidDate(paramMap.get(paramToDateKey)) ) {
+				query.addCriteria(Criteria.where(dbEntityField)
+						.gte(EAUtil.getDateFormatObj(paramMap.get(paramFromDateKey)))
+						.lte(EAUtil.getDateFormatObj(paramMap.get(paramToDateKey))));
+		}else if(paramMap.get(paramFromDateKey) != null && 
+				validator.isValidDate(paramMap.get(paramFromDateKey))) {
+			query.addCriteria(Criteria.where(dbEntityField)
+					.gte(EAUtil.getDateFormatObj(paramMap.get(paramFromDateKey))));
+		}else if(paramMap.get(paramToDateKey) != null
+				&& validator.isValidDate(paramMap.get(paramToDateKey))) {
+			query.addCriteria(Criteria.where(dbEntityField)
+					.lte(EAUtil.getDateFormatObj(paramMap.get(paramToDateKey))));
+		}
+	}
+	
+	public void addSearchCriteriaForTime(final String paramFromTimeKey, final String paramToTimeKey, final String dbEntityField, Query query, final Map<String, String> paramMap) throws InvalidDateFormatException {
+		if(paramMap.get(paramFromTimeKey) != null && 
+				paramMap.get(paramToTimeKey) != null && 
+				validator.isValidTime(paramMap.get(paramFromTimeKey)) &&
+				validator.isValidTime(paramMap.get(paramToTimeKey)) ) {
+				query.addCriteria(Criteria.where(dbEntityField)
+						.gte(EAUtil.getTimeFormatObj(paramMap.get(paramFromTimeKey)))
+						.lte(EAUtil.getTimeFormatObj(paramMap.get(paramToTimeKey))));
+		}else if(paramMap.get(paramFromTimeKey) != null && 
+				validator.isValidTime(paramMap.get(paramFromTimeKey))) {
+			query.addCriteria(Criteria.where(dbEntityField)
+					.gte(EAUtil.getTimeFormatObj(paramMap.get(paramFromTimeKey))));
+		}else if(paramMap.get(paramToTimeKey) != null
+				&& validator.isValidTime(paramMap.get(paramToTimeKey))) {
+			query.addCriteria(Criteria.where(dbEntityField)
+					.lte(EAUtil.getTimeFormatObj(paramMap.get(paramToTimeKey))));
+		}
+	}
+	
 
 }
