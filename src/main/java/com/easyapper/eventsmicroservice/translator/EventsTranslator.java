@@ -63,7 +63,7 @@ public class EventsTranslator {
 				startDate, lastDate,
 				eventEntity.getEvent_min_age(), eventEntity.getEvent_max_age(),
 				eventEntity.getEvent_price(), bookingDto, 
-				eventEntity.getOriginal_event());
+				eventEntity.getOriginal_event(), eventEntity.getEvent_approved());
 				
 		return eventDto;
 	}
@@ -88,7 +88,7 @@ public class EventsTranslator {
 				evenDto.getEvent_image_url(), startDateObj,
 				lastDateObj, evenDto.getEvent_min_age(),
 				evenDto.getEvent_max_age(), evenDto.getEvent_price(),
-				bookingEntity, evenDto.getOriginal_event());
+				bookingEntity, evenDto.getOriginal_event(), evenDto.getEvent_approved());
 		return eventEntity;
 	}
 	

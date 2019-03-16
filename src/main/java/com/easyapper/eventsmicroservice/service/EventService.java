@@ -9,15 +9,13 @@ import org.springframework.stereotype.Service;
 
 import com.easyapper.eventsmicroservice.dao.PostedEventDao;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
-import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.model.UserEventListsContainerDto;
-import com.easyapper.eventsmicroservice.translator.EventsTranslator;
 import com.easyapper.eventsmicroservice.model.EventDto;
+import com.easyapper.eventsmicroservice.translator.EventsTranslator;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 

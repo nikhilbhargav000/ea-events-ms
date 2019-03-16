@@ -2,15 +2,11 @@ package com.easyapper.eventsmicroservice.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,16 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.easyapper.eventsmicroservice.api.ImageApi;
 import com.easyapper.eventsmicroservice.dao.DBSeqValueFinder;
 import com.easyapper.eventsmicroservice.dao.PostedEventDao;
-import com.easyapper.eventsmicroservice.dao.PostedEventDaoImpl;
 import com.easyapper.eventsmicroservice.dao.SubscribedEventDao;
-import com.easyapper.eventsmicroservice.entity.AddressSubEntity;
-import com.easyapper.eventsmicroservice.entity.EventBookingSubEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
-import com.easyapper.eventsmicroservice.entity.LocationSubEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
@@ -39,12 +30,9 @@ import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.PostedEventExistsException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.model.AddressDto;
+import com.easyapper.eventsmicroservice.model.EventDto;
 import com.easyapper.eventsmicroservice.model.UserEventListsContainerDto;
 import com.easyapper.eventsmicroservice.translator.EventsTranslator;
-import com.easyapper.eventsmicroservice.model.EventBookingDto;
-import com.easyapper.eventsmicroservice.model.EventDto;
-import com.easyapper.eventsmicroservice.model.LocationDto;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 import com.easyapper.eventsmicroservice.utility.EAValidator;
@@ -73,6 +61,9 @@ public class UserService {
 		eventEntity.set_id(eventId);
 		eventEntity.setUser_id(userId);
 		eventEntity.setEvent_type(eventEntity.getEvent_type().toLowerCase());
+		if(eventEntity.getEvent_approved() == null) {
+			eventEntity.setEvent_approved(EAConstants.APPROVED_VAL_0);
+		}
 		return postedEventDao.insertEvent(eventEntity);
 	}
 	
@@ -82,7 +73,7 @@ public class UserService {
 		}
 		SubscribedEventEntity subcEventEntity = eventsTranslator.getSubcribedEventEntity(eventDto);
 		String eventId = EAUtil.getSubscribedEventId(dbSeqFinder.getNextSeqValue(
-				EAConstants.SUBSCRIBED_EVENT_COLLECTION_DB_NAME));
+				EAConstants.FIXED_DB_NAME.SUBSCRIBED_EVENT_COLLECTION_NAME.toString()));
 		subcEventEntity.set_id(eventId);
 		subcEventEntity.setUser_id(userId);
 		String id = subscribedEventDao.insertSubscribedEvent(subcEventEntity);

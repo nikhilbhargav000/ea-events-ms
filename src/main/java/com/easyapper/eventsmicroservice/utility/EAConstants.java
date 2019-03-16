@@ -1,22 +1,26 @@
 package com.easyapper.eventsmicroservice.utility;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.easyapper.eventsmicroservice.entity.AddressSubEntity;
-import com.easyapper.eventsmicroservice.entity.EventBookingSubEntity;
-import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
-import com.easyapper.eventsmicroservice.entity.LocationSubEntity;
-import com.easyapper.eventsmicroservice.model.AddressDto;
-import com.easyapper.eventsmicroservice.model.EventBookingDto;
-import com.easyapper.eventsmicroservice.model.EventDto;
-import com.easyapper.eventsmicroservice.model.LocationDto;
+import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 
 public final class EAConstants {
+	
+	public enum FIXED_DB_NAME {
+		SUBSCRIBED_EVENT_COLLECTION_NAME{
+			@Override
+			public String toString() {
+				return "SubscribedEventCollection";
+			}
+		}, 
+		CATEGORY_COLLECTION_NAME{
+			@Override
+			public String toString() {
+				return "CategoryCollection";
+			}
+		}
+		
+	}
 	
 	public static final String EVENT_COLLECTION_PREFIX = "Event_";
 	public static final String EVENT_COLLECTION_POSTFIX = "_Collection";
@@ -24,9 +28,12 @@ public final class EAConstants {
 	public static final String POSTED_EVENT_ID_PREFIX = "PTD_";
 	public static final String SUBSCRIBED_EVENT_ID_PREFIX = "SUB_";
 
-	public static final String SUBSCRIBED_EVENT_COLLECTION_DB_NAME = "SubscribedEventCollection";
+//	public static final String SUBSCRIBED_EVENT_COLLECTION_DB_NAME = "SubscribedEventCollection";
 	public static final String EVENT_TYPE_POSTED = "posted";
 	public static final String EVENT_TYPE_SUBSCRIBED = "subscribed";
+	
+	public static final String APPROVED_VAL_0 = "0";
+	public static final String APPROVED_VAL_1 = "1";
 	
 	public static final String IMAGE_API_MAPPING = "images";
 	public static final String IMAGE_BASE_DIRECTORY = File.separator + "images" + File.separator;
@@ -73,4 +80,5 @@ public final class EAConstants {
 	public static final String DOT = ".";
 
 	public static final int INVALID_PAGINATION_VALUE = -1;
+	
 }

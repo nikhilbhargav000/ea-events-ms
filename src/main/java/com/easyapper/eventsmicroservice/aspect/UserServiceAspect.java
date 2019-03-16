@@ -1,7 +1,5 @@
 package com.easyapper.eventsmicroservice.aspect;
 
-import java.util.logging.Logger;
-
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;

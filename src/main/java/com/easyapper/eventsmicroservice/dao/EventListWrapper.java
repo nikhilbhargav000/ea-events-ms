@@ -1,8 +1,8 @@
-package com.easyapper.eventsmicroservice.entity;
-
-import com.easyapper.eventsmicroservice.model.EventDto;
+package com.easyapper.eventsmicroservice.dao;
 
 import java.util.List;
+
+import com.easyapper.eventsmicroservice.model.EventDto;
 
 public class EventListWrapper {
     private List<EventDto> events;

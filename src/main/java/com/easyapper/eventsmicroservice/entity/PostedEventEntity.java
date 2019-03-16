@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import com.easyapper.eventsmicroservice.model.originalevent.OrglEventDto;
 
 import lombok.Getter;
@@ -35,12 +36,13 @@ public class PostedEventEntity {
 	private String event_price;
 	private EventBookingSubEntity event_booking;
 	private OrglEventDto original_event;
+	private String event_approved;
 	//Constructor 
 	public PostedEventEntity(String _id, String user_id, String event_type, String event_category, String event_subcategory,
 			LocationSubEntity event_location, String organizer_email, String event_name, String event_description,
 			String event_image_url, Date event_start_date, Date event_last_date, String event_min_age,
 			String event_max_age, String event_price, EventBookingSubEntity event_booking, 
-			OrglEventDto original_event) {
+			OrglEventDto original_event, String event_approved) {
 		super();
 		this._id = _id;
 		this.user_id = user_id;
@@ -59,6 +61,7 @@ public class PostedEventEntity {
 		this.event_price = event_price;
 		this.event_booking = event_booking;
 		this.original_event = original_event;
+		this.event_approved = event_approved;
 	}
 	
 }

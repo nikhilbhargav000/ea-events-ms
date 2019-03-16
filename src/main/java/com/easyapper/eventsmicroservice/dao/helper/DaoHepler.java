@@ -1,6 +1,5 @@
 package com.easyapper.eventsmicroservice.dao.helper;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
-import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 import com.easyapper.eventsmicroservice.utility.EAValidator;
 

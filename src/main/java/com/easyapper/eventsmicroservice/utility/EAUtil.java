@@ -3,25 +3,13 @@ package com.easyapper.eventsmicroservice.utility;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.easyapper.eventsmicroservice.entity.AddressSubEntity;
-import com.easyapper.eventsmicroservice.entity.EventBookingSubEntity;
-import com.easyapper.eventsmicroservice.entity.LocationSubEntity;
-import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
-import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
-import com.easyapper.eventsmicroservice.model.AddressDto;
-import com.easyapper.eventsmicroservice.model.EventBookingDto;
-import com.easyapper.eventsmicroservice.model.LocationDto;
 import com.easyapper.eventsmicroservice.model.EventDto;
 
 public class EAUtil {
@@ -38,6 +26,7 @@ public class EAUtil {
 	public static String getPostedEventId(String userId, Long nextSeq) {
 		return EAConstants.POSTED_EVENT_ID_PREFIX + userId + "_" + String.valueOf(nextSeq);
 	}
+	
 	public static String getSubscribedEventId( Long nextSeq) {
 		return EAConstants.SUBSCRIBED_EVENT_ID_PREFIX + String.valueOf(nextSeq);
 	}

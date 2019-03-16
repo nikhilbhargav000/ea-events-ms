@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.easyapper.eventsmicroservice.model.LocationDto;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
@@ -23,7 +22,7 @@ import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.model.CategoryDto;
 import com.easyapper.eventsmicroservice.model.EventDto;
-import com.easyapper.eventsmicroservice.model.SubscribedEventDto;
+import com.easyapper.eventsmicroservice.model.LocationDto;
 import com.easyapper.eventsmicroservice.service.CategoryService;
 import com.easyapper.eventsmicroservice.service.EventService;
 import com.easyapper.eventsmicroservice.service.UserService;
@@ -123,6 +122,11 @@ public class EAValidator {
 			logger.warning("Invalid category : " + eventDto.getEvent_category());
 			return false;
 		}
+		//Approved
+		if(!isValidEventApproved(eventDto.getEvent_approved())) {
+			logger.warning("Invalid event_approved : " + eventDto.getEvent_category());
+			return false;
+		}
 		return true;
 	}
 	
@@ -173,6 +177,15 @@ public class EAValidator {
 		return true;
 	}
 	
+	public boolean isValidCategory(CategoryDto categoryDto) {
+		if(categoryDto.getId() == 0) {
+			return true;
+		}else {
+			logger.warning("id for category should be zero, while posting");
+			return false;
+		}
+	}
+	
 	public boolean postedEventExists(String userId, EventDto eventDto) throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
 		String eventHashKey = EAUtil.getHashString_ForPostedEvent(eventDto);
 		int page = 1, size = 200 ;
@@ -203,6 +216,21 @@ public class EAValidator {
 		}
 		return false;
 	}
+	
+	public boolean isValidEventApproved(String eventApproved) throws EasyApperDbException {
+		if(eventApproved == null) {
+			return true;
+		}
+		if(eventApproved.toLowerCase().equals(EAConstants.APPROVED_VAL_0) || 
+				eventApproved.toLowerCase().equals(EAConstants.APPROVED_VAL_1)) {
+			return true;
+		}else {
+			logger.warning("event_approved should be null, yes or no");
+			return false;
+		}
+		
+	}
+	
 	
 	public boolean isValidPostedEventId(String postedEventId) throws EasyApperDbException {
 		try {

@@ -7,8 +7,10 @@ import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 
 public interface CategoryDao {
 
-	public List<CategoryEntity> getAllCategories(int page, int total) throws EasyApperDbException;
+	public List<CategoryEntity> getAllCategories(int page, int size) throws EasyApperDbException;
 	
 	public List<CategoryEntity> getAllCategories() throws EasyApperDbException;
+	
+	public int insertCategory(CategoryEntity categoryEntity) throws EasyApperDbException ;
 	
 }

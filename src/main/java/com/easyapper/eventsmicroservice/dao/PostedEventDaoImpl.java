@@ -1,19 +1,12 @@
 package com.easyapper.eventsmicroservice.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-
-import javax.swing.text.html.parser.Entity;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -30,8 +23,6 @@ import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 import com.easyapper.eventsmicroservice.utility.EAValidator;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.client.MongoCollection;
 
 @Repository

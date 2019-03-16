@@ -3,21 +3,23 @@ package com.easyapper.eventsmicroservice.api;
 import java.util.List;
 import java.util.Map;
 
-import com.easyapper.eventsmicroservice.entity.EventListWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.easyapper.eventsmicroservice.dao.EventListWrapper;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.model.UserEventListsContainerDto;
 import com.easyapper.eventsmicroservice.model.EventDto;
-import com.easyapper.eventsmicroservice.model.SubscribedEventDto;
 import com.easyapper.eventsmicroservice.service.EventService;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 
