@@ -19,13 +19,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.easyapper.eventsmicroservice.dao.helper.DaoHepler;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.helper.DaoHepler;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
@@ -39,13 +39,10 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	
 	@Autowired
 	EALogger logger;
-	
 	@Autowired
 	EAValidator validator;
-	
 	@Autowired
 	DaoHepler daoHelper;
-	
 	@Autowired
 	MongoTemplate mongoTemplate;
 	
@@ -100,7 +97,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		List<PostedEventEntity> allEventList = new ArrayList<>();
 		//Pagination
 		Query query = new Query();
-		EAUtil.setPaginationInQuery(query, page, size, skip);
+		daoHelper.setPaginationInQuery(query, page, size, skip);
 		//Search
 		this.addSearchParams(query, paramMap);
 		try {

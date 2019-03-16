@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.easyapper.eventsmicroservice.dao.helper.DaoHepler;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
@@ -19,7 +20,6 @@ import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
-import com.easyapper.eventsmicroservice.helper.DaoHepler;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
@@ -94,7 +94,7 @@ public class SubscribedEventDaoImpl implements SubscribedEventDao {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("user_id").is(userId));
 		//Pagination
-		EAUtil.setPaginationInQuery(query, page, size, skip);
+		daoHelper.setPaginationInQuery(query, page, size, skip);
 		//Search
 		this.addSearchParams(query, paramMap);
 		List<SubscribedEventEntity> eventList = null;

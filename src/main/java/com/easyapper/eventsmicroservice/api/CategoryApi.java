@@ -51,6 +51,7 @@ public class CategoryApi {
 	
 	@RequestMapping(value="", method=RequestMethod.POST)
 	public ResponseEntity<String> createCategory(@RequestBody CategoryDto categoryDto){
+		logger.info("In CategoryApi : createCategory");
 		
 		return null;
 	}

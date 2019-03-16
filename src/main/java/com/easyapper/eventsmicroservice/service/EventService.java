@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.easyapper.eventsmicroservice.dao.PostedEventDao;
+import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
+import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.model.UserEventListsContainerDto;
+import com.easyapper.eventsmicroservice.translator.EventsTranslator;
 import com.easyapper.eventsmicroservice.model.EventDto;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
@@ -22,24 +25,23 @@ import com.easyapper.eventsmicroservice.utility.EAUtil;
 public class EventService {
 	
 	@Autowired
-	PostedEventDao eventDao;
-	
+	EventsTranslator eventsTranslator;
 	@Autowired
-	UserService userService;
+	PostedEventDao postedEventDao;
 	
 	public List<EventDto> getAllPostedEvents(Map<String, String> paramMap, int page, int size) 
 			throws EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
-		List<String> eventCollectionNameList = eventDao.getAllEventCollectionName();
+		List<String> eventCollectionNameList = postedEventDao.getAllEventCollectionName();
 		List<String> userIdList = this.getUserIdList(eventCollectionNameList);
 		List<EventDto> allPostedEventList = new ArrayList();
 		long toSkip = (page-1) * size;
 		int toPickSize = size;
 		for(String userId : userIdList) {
-			List<EventDto> curPostedEventList = userService.getAllUserEvent(userId, paramMap, 1, toPickSize, toSkip).getPosted();
+			List<EventDto> curPostedEventList = this.getAllUserEvent(userId, paramMap, 1, toPickSize, toSkip);
 			if(curPostedEventList.size() == 0) {
-				toSkip -= (userService.getPostedEventsCount(userId));
+				toSkip -= (this.getPostedEventsCount(userId));
 			}else if(curPostedEventList.size() > 0) {
-				toSkip -= (userService.getPostedEventsCount(userId));
+				toSkip -= (this.getPostedEventsCount(userId));
 				toPickSize -= curPostedEventList.size();
 			}
 			allPostedEventList.addAll(curPostedEventList);
@@ -55,7 +57,7 @@ public class EventService {
 		if(userId == null) {
 			throw new UserIdNotExistException();
 		}
-		EventDto eventDto = userService.getPostedEvent(userId, eventId);
+		EventDto eventDto = eventsTranslator.getEventDto(postedEventDao.getEvent(userId, eventId));
 		return eventDto;
 	}
 
@@ -68,4 +70,16 @@ public class EventService {
 		}
 		return userIdList;
 	}	
+	
+	private long getPostedEventsCount(String userId) throws EasyApperDbException {
+		return postedEventDao.getEventsCount(userId);
+	}
+	
+	public List<EventDto> getAllUserEvent(String userId, Map<String, String> paramMap, int page, int size, long skip) 
+			throws UserIdNotExistException, EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
+		List<PostedEventEntity> postedEntityList  = postedEventDao.getAllEvent(userId, paramMap, page, size, skip);
+		List<EventDto> postedDtoList = eventsTranslator.getPostedEventDtoList(postedEntityList);
+		return postedDtoList;
+	}
+	
 }

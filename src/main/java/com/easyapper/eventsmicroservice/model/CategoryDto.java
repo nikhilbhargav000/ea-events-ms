@@ -1,11 +1,22 @@
 package com.easyapper.eventsmicroservice.model;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Null;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CategoryDto {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter @Setter
+@ToString
+public class CategoryDto {
+	@Null(message="_id should be null")
 	private int _id;
+	@NotEmpty(message="name should not be empty")
 	private String name;
+	@NotEmpty(message="image_url should not be empty")
 	private String image_url;
 	
 	//Constructor
@@ -16,26 +27,4 @@ public class CategoryDto {
 		this.image_url = image_url;
 	}
 	
-	//Getter and Setters;
-	public int get_id() {
-		return _id;
-	}
-	
-	public void set_id(int _id) {
-		this._id = _id;
-	}
-	@JsonProperty("category")
-	public String getName() {
-		return name;
-	}
-	@JsonProperty("category")
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getImage_url() {
-		return image_url;
-	}
-	public void setImage_url(String image_url) {
-		this.image_url = image_url;
-	}
 }
