@@ -28,7 +28,6 @@ public final class EAConstants {
 	public static final String POSTED_EVENT_ID_PREFIX = "PTD_";
 	public static final String SUBSCRIBED_EVENT_ID_PREFIX = "SUB_";
 
-//	public static final String SUBSCRIBED_EVENT_COLLECTION_DB_NAME = "SubscribedEventCollection";
 	public static final String EVENT_TYPE_POSTED = "posted";
 	public static final String EVENT_TYPE_SUBSCRIBED = "subscribed";
 	

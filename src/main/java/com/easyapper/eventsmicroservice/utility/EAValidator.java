@@ -210,7 +210,7 @@ public class EAValidator {
 		List<CategoryDto> categoryList = categoryService.getCatorgies();
 		for(CategoryDto categoryDto : categoryList) {
 			String curCategory = categoryDto.getName();
-			if(curCategory.equals(category)) {
+			if(curCategory != null && curCategory.equals(category)) {
 				return true;
 			}
 		}
