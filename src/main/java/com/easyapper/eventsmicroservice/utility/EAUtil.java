@@ -108,7 +108,12 @@ public class EAUtil {
 	}
 	
 	public static String getImageRootDir() {
-		String rootDir = System.getProperty("catalina.home");
+//		String rootDir = System.getProperty("catalina.home");
+		
+		
+		String rootDir = "/var/home/nikhil/EasyApper";
+		
+		
 		String imageDir = rootDir + EAConstants.IMAGE_BASE_DIRECTORY;
 		return imageDir;
 	}

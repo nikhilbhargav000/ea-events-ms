@@ -15,6 +15,9 @@ public class ImageService {
 	
 	public byte[] getImage(String imageName) throws IOException, InvalidImageFileNameException {
 		Path imagePath = Paths.get(EAUtil.getImageRootDir(), imageName);
+		
+		System.out.println(imagePath);
+		
 		if(!imagePath.toFile().exists()) {
 			throw new InvalidImageFileNameException();
 		}
