@@ -55,6 +55,8 @@ public class EventsTranslator {
 				bookingEntity.getInquiry_url());
 		String startDate = EAUtil.getDateFormatStr(eventEntity.getEvent_start_date());
 		String lastDate = EAUtil.getDateFormatStr(eventEntity.getEvent_last_date());
+		String startTime = EAUtil.getTimeFormatStr(eventEntity.getEvent_start_time());
+		String endTime = EAUtil.getTimeFormatStr(eventEntity.getEvent_end_time());
 		EventDto eventDto = new EventDto(eventEntity.get_id(), eventEntity.getUser_id(),
 				eventEntity.getEvent_type(),
 				eventEntity.getEvent_category(), eventEntity.getEvent_subcategory(),
@@ -63,7 +65,8 @@ public class EventsTranslator {
 				startDate, lastDate,
 				eventEntity.getEvent_min_age(), eventEntity.getEvent_max_age(),
 				eventEntity.getEvent_price(), bookingDto, 
-				eventEntity.getOriginal_event(), eventEntity.getEvent_approved());
+				eventEntity.getOriginal_event(), eventEntity.getEvent_approved(), 
+				startTime, endTime);
 				
 		return eventDto;
 	}
@@ -80,6 +83,8 @@ public class EventsTranslator {
 				bookingDto.getInquiry_url());
 		Date startDateObj = EAUtil.getDateFormatObj(evenDto.getEvent_start_date());
 		Date lastDateObj = EAUtil.getDateFormatObj(evenDto.getEvent_last_date());
+		Date startTimeObj = EAUtil.getTimeFormatObj(evenDto.getEvent_start_time());
+		Date endTimeObj = EAUtil.getTimeFormatObj(evenDto.getEvent_end_time());
 		PostedEventEntity eventEntity = new PostedEventEntity(evenDto.get_id(),
 				evenDto.getUser_id(), evenDto.getEvent_type(),
 				evenDto.getEvent_category(), evenDto.getEvent_subcategory(),
@@ -88,7 +93,9 @@ public class EventsTranslator {
 				evenDto.getEvent_image_url(), startDateObj,
 				lastDateObj, evenDto.getEvent_min_age(),
 				evenDto.getEvent_max_age(), evenDto.getEvent_price(),
-				bookingEntity, evenDto.getOriginal_event(), evenDto.getEvent_approved());
+				bookingEntity, evenDto.getOriginal_event(), evenDto.getEvent_approved(), 
+				startTimeObj, endTimeObj);
+		
 		return eventEntity;
 	}
 	

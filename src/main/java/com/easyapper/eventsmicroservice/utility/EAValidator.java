@@ -90,13 +90,27 @@ public class EAValidator {
 			return false;
 		}
 		//Dates
-		if(!isValidDate(eventDto.getEvent_start_date())) {
+		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
 			return false;
 		} 
-		if(!isValidDate(eventDto.getEvent_last_date())) {
+		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
 			return false;
 		} 
-		if(!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+		if(eventDto.getEvent_start_date() != null && 
+				eventDto.getEvent_last_date() != null &&
+				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+			return false;
+		}
+		//Time
+		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
+			return false;
+		}
+		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
+			return false;
+		}
+		if(eventDto.getEvent_start_time() != null &&
+				eventDto.getEvent_end_time() != null &&
+				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
 			return false;
 		}
 		//Location
@@ -139,24 +153,28 @@ public class EAValidator {
 			logger.warning("event_type cannot be other then subscribed");
 			return false;
 		}
-		//Date
-		if(!isValidDate(eventDto.getEvent_start_date())) {
+		//Dates
+		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
 			return false;
 		} 
-		if(!isValidDate(eventDto.getEvent_last_date())) {
+		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
 			return false;
 		} 
-		if(!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+		if(eventDto.getEvent_start_date() != null && 
+				eventDto.getEvent_last_date() != null &&
+				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
 			return false;
 		}
 		//Time
-		if(!isValidTime(eventDto.getEvent_start_time())) {
+		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
 			return false;
 		}
-		if(!isValidTime(eventDto.getEvent_end_time())) {
+		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
 			return false;
 		}
-		if(!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
+		if(eventDto.getEvent_start_time() != null &&
+				eventDto.getEvent_end_time() != null &&
+				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
 			return false;
 		}
 		//PostedEventId
@@ -259,11 +277,14 @@ public class EAValidator {
 	}
 	
 	public static boolean isValidDate(String strDate) {
+		if(strDate == null) {
+			logger.warning("Invalid date format : " + strDate);
+			return false;
+		}
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat(EAConstants.DATE_FORMAT_PATTERN);
 			Date date = dateFormat.parse(strDate);
 		}catch(ParseException e) {
-			logger.warning(e.getMessage(), e);
 			logger.warning("Invalid date format : " + strDate);
 			return false;
 		}
@@ -279,6 +300,10 @@ public class EAValidator {
 	}
 	
 	public static boolean isValidTime(String strTime) {
+		if(strTime == null) {
+			logger.warning("Invalid date format : " + strTime);
+			return false;
+		}
 		try {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(EAConstants.TIME_FORMAT_PATTERN);
 			LocalTime locaTime = LocalTime.parse(strTime, formatter);
@@ -290,7 +315,10 @@ public class EAValidator {
 	}
 	
 	private static boolean isValidEndTime(String strStartTime, String strEndTime) {
-		
+		if(strStartTime == null || strEndTime == null) {
+			logger.warning("Null value for start_time or end_time");
+			return false;
+		}
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(EAConstants.TIME_FORMAT_PATTERN);
 		LocalTime startLocalDate = LocalTime.parse(strStartTime, formatter);
 		LocalTime endLocalDate = LocalTime.parse(strEndTime, formatter);
@@ -303,6 +331,10 @@ public class EAValidator {
 	}
 	
 	private static boolean isValidLastDate(String strStartDate, String strLastDate) {
+		if(strStartDate == null || strLastDate == null) {
+			logger.warning("Null value for start_date or last_date");
+			return false;
+		}
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(EAConstants.DATE_FORMAT_PATTERN);
 		LocalDate startLocalDate = LocalDate.parse(strStartDate, formatter);
 		LocalDate endLocalDate = LocalDate.parse(strLastDate, formatter);

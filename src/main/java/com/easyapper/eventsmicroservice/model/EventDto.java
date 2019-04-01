@@ -46,7 +46,8 @@ public class EventDto implements Cloneable{
 			LocationDto event_location, String organizer_email, String event_name, String event_description,
 			String event_image_url, String event_start_date, String event_last_date, String event_min_age,
 			String event_max_age, String event_price, EventBookingDto event_booking,
-			OrglEventDto original_event, String approved) {
+			OrglEventDto original_event, String approved, 
+			String event_start_time, String event_end_time) {
 		super();
 		this._id = _id;
 		this.user_id = user_id;
@@ -66,6 +67,8 @@ public class EventDto implements Cloneable{
 		this.event_booking = event_booking;
 		this.original_event = original_event;
 		this.event_approved = approved;
+		this.event_start_time = event_start_time;
+		this.event_end_time = event_end_time;
 	}
 	//Constructor for subscribed events
 	public EventDto(@Null(message = "_id should be null") String _id,
