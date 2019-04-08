@@ -24,6 +24,7 @@ import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidPostedEventIdException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
+import com.easyapper.eventsmicroservice.exception.InvalidUpdateEventRequestException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.PostedEventExistsException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
@@ -103,7 +104,7 @@ public class UserApi {
 			result.getAllErrors().stream().forEach(e -> logger.warning(e.getDefaultMessage()));
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		if(!EAValidator.isValidSubscribedEvent(eventDto)) {
+		if(!validator.isValidSubscribedEvent(eventDto)) {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		String id = null;
@@ -157,9 +158,9 @@ public class UserApi {
 					HttpStatus.BAD_REQUEST);
 		}
 		try {
-			if(!validator.isValidEvent(eventUpdateDto)) {
-				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-			}
+//			if(!validator.isValidEvent(eventUpdateDto)) {
+//				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+//			}
 			userService.updateEvent(userId, eventId, eventUpdateDto);
 		} catch (UserIdNotExistException e) {
 			logger.warning(e.getMessage(), e);
@@ -167,7 +168,7 @@ public class UserApi {
 		} catch (EventIdNotExistException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-		} catch (InvalidPostedEventIdException e) {
+		} catch (InvalidPostedEventIdException | InvalidUpdateEventRequestException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		} catch (EasyApperDbException e) {

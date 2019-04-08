@@ -10,6 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -89,30 +90,34 @@ public class EAValidator {
 			logger.warning("event_type cannot be other then posted");
 			return false;
 		}
-		//Dates
-		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
-			return false;
-		} 
-		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
-			return false;
-		} 
-		if(eventDto.getEvent_start_date() != null && 
-				eventDto.getEvent_last_date() != null &&
-				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+		//Date And Time 
+		if(!this.isValidEventDateAndTime(eventDto)) {
 			return false;
 		}
-		//Time
-		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
-			return false;
-		}
-		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
-			return false;
-		}
-		if(eventDto.getEvent_start_time() != null &&
-				eventDto.getEvent_end_time() != null &&
-				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
-			return false;
-		}
+//		//Dates
+//		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
+//			return false;
+//		} 
+//		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
+//			return false;
+//		} 
+//		if(eventDto.getEvent_start_date() != null && 
+//				eventDto.getEvent_last_date() != null &&
+//				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+//			return false;
+//		}
+//		//Time
+//		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
+//			return false;
+//		}
+//		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
+//			return false;
+//		}
+//		if(eventDto.getEvent_start_time() != null &&
+//				eventDto.getEvent_end_time() != null &&
+//				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
+//			return false;
+//		}
 		//Location
 		if(eventDto.getEvent_location() == null) {
 			logger.warning("event_location should not be null for posted events");
@@ -133,18 +138,16 @@ public class EAValidator {
 		}
 		//Category
 		if(!isValidCategory(eventDto.getEvent_category())) {
-			logger.warning("Invalid category : " + eventDto.getEvent_category());
 			return false;
 		}
 		//Approved
 		if(!isValidEventApproved(eventDto.getEvent_approved())) {
-			logger.warning("Invalid event_approved : " + eventDto.getEvent_category());
 			return false;
 		}
 		return true;
 	}
 	
-	public static boolean isValidSubscribedEvent(EventDto eventDto) {
+	public boolean isValidSubscribedEvent(EventDto eventDto) {
 		//Event Type
 		if(!isValidEventType(eventDto.getEvent_type())) {
 			return false;
@@ -153,6 +156,53 @@ public class EAValidator {
 			logger.warning("event_type cannot be other then subscribed");
 			return false;
 		}
+		//Date And Time 
+		if(!this.isValidEventDateAndTime(eventDto)) {
+			return false;
+		}
+//		//Dates
+//		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
+//			return false;
+//		} 
+//		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
+//			return false;
+//		} 
+//		if(eventDto.getEvent_start_date() != null && 
+//				eventDto.getEvent_last_date() != null &&
+//				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+//			return false;
+//		}
+//		//Time
+//		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
+//			return false;
+//		}
+//		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
+//			return false;
+//		}
+//		if(eventDto.getEvent_start_time() != null &&
+//				eventDto.getEvent_end_time() != null &&
+//				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
+//			return false;
+//		}
+		//PostedEventId
+		if(eventDto.getPosted_event_id() == null) {
+			logger.warning("posted_event_id cannot be null for subcribed events");
+			return false;
+		}
+		//Booking
+		if(eventDto.getEvent_booking() != null) {
+			logger.warning("event_booking should be null for subcribed events");
+			return false;
+		}
+		//Location
+		if(eventDto.getEvent_location() != null) {
+			logger.warning("event_location should be null for subcribed events");
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean isValidEventDateAndTime(EventDto eventDto) {
 		//Dates
 		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
 			return false;
@@ -177,19 +227,62 @@ public class EAValidator {
 				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
 			return false;
 		}
-		//PostedEventId
-		if(eventDto.getPosted_event_id() == null) {
-			logger.warning("posted_event_id cannot be null for subcribed events");
+		return true;
+	}
+	
+	private boolean isValidUpdateEventDateAndTime(EventDto eventDto, EventDto existingEventDto) {
+		//Date And Time 
+		if(!this.isValidEventDateAndTime(eventDto)) {
 			return false;
 		}
-		//Booking
-		if(eventDto.getEvent_booking() != null) {
-			logger.warning("event_booking should be null for subcribed events");
+		//Date with Existing event
+		if(eventDto.getEvent_start_date() != null && 
+				eventDto.getEvent_last_date() == null &&
+				existingEventDto.getEvent_last_date() != null && 
+				!isValidLastDate(eventDto.getEvent_start_date(), existingEventDto.getEvent_last_date())) {
 			return false;
 		}
-		//Location
-		if(eventDto.getEvent_location() != null) {
-			logger.warning("event_location should be null for subcribed events");
+		if(eventDto.getEvent_start_date() == null && 
+				eventDto.getEvent_last_date() != null &&
+				existingEventDto.getEvent_start_date() != null &&
+				!isValidLastDate(existingEventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+			return false;
+		}
+		//Time with Existing event
+		if(eventDto.getEvent_start_time() != null &&
+				eventDto.getEvent_end_time() == null &&
+				existingEventDto.getEvent_end_time() != null &&
+				!isValidEndTime(eventDto.getEvent_start_time(), existingEventDto.getEvent_end_time())) {
+			return false;
+		}
+		if(eventDto.getEvent_start_time() == null &&
+				eventDto.getEvent_end_time() != null &&
+				existingEventDto.getEvent_start_time() != null &&
+				!isValidEndTime(existingEventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isValidUpdatePostedEvent(EventDto eventDto, EventDto existingEventDto) throws EasyApperDbException {
+		//Event Type
+		if(!isValidEventType(eventDto.getEvent_type())) {
+			return false;
+		} 
+		if(!eventDto.getEvent_type().equals(EAConstants.EVENT_TYPE_POSTED)) {
+			logger.warning("event_type cannot be other then posted");
+			return false;
+		}
+		//Dates
+		if(!this.isValidUpdateEventDateAndTime(eventDto, existingEventDto)) {
+			return false;
+		}
+		//Category
+		if( eventDto.getEvent_category() != null && !isValidCategory(eventDto.getEvent_category())) {
+			return false;
+		}
+		//Approved
+		if( eventDto.getEvent_approved() != null && !isValidEventApproved(eventDto.getEvent_approved())) {
 			return false;
 		}
 		return true;
@@ -232,6 +325,7 @@ public class EAValidator {
 				return true;
 			}
 		}
+		logger.warning("Invalid category : " + category);
 		return false;
 	}
 	
@@ -243,10 +337,10 @@ public class EAValidator {
 				eventApproved.toLowerCase().equals(EAConstants.APPROVED_VAL_1)) {
 			return true;
 		}else {
-			logger.warning("event_approved should be null, yes or no");
+			logger.warning("event_approved should be null, 0 or 1");
+			logger.warning("Invalid event_approved : " + eventApproved);
 			return false;
 		}
-		
 	}
 	
 	

@@ -33,6 +33,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Apache Commons -->
+		<dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-configuration2</artifactId>
+		  <version>2.4</version>
+		</dependency>
 		
 	<!-- Lambok -->
 		<dependency>
@@ -54,8 +60,6 @@
 		  <version>1.8.12</version>
 		  <scope>compile</scope>
 		</dependency>
-		
-		
 		
 	</dependencies>
 

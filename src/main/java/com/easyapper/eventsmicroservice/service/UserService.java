@@ -26,6 +26,7 @@ import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidPostedEventIdException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
+import com.easyapper.eventsmicroservice.exception.InvalidUpdateEventRequestException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.PostedEventExistsException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
@@ -104,13 +105,16 @@ public class UserService {
 	}
 	
 	public void updateEvent(String userId, String eventId, 
-			EventDto eventDto) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, InvalidPostedEventIdException {
+			EventDto eventDto) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, InvalidPostedEventIdException, InvalidUpdateEventRequestException {
 		if(eventDto.getEvent_type().equals(EAConstants.EVENT_TYPE_POSTED)) {
-			PostedEventEntity eventEntity = eventsTranslator.getPostedEventEntity(eventDto);
-			eventEntity.set_id(null);
-			eventEntity.setUser_id(userId);
-			eventEntity.setEvent_type(eventEntity.getEvent_type().toLowerCase());
-			postedEventDao.updateEvent(userId, eventId, eventEntity);
+			
+			this.updatePostedEvent(userId, eventId, eventDto);
+			
+//			PostedEventEntity eventEntity = eventsTranslator.getPostedEventEntity(eventDto);
+//			eventEntity.set_id(null);
+//			eventEntity.setUser_id(userId);
+//			eventEntity.setEvent_type(eventEntity.getEvent_type().toLowerCase());
+//			postedEventDao.updateEvent(userId, eventId, eventEntity);
 		}else if(eventDto.getEvent_type().equals(EAConstants.EVENT_TYPE_SUBSCRIBED)) {
 			if(!validator.isValidPostedEventId(eventDto.getPosted_event_id())) {
 				throw new InvalidPostedEventIdException();
@@ -121,6 +125,29 @@ public class UserService {
 			subscribedEventDao.updateEvent(eventId, subcEventEntity);
 		}
 	}
+	
+	
+	
+	
+	
+	private void updatePostedEvent(String userId, String eventId, 
+			EventDto eventDto) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, InvalidUpdateEventRequestException {
+		EventDto existingEventDto = this.getPostedEvent(userId, eventId);
+		if(validator.isValidUpdatePostedEvent(eventDto, existingEventDto)) {	
+			PostedEventEntity eventEntity = eventsTranslator.getPostedEventEntity(eventDto);
+			eventEntity.set_id(null);
+			eventEntity.setUser_id(userId);
+			eventEntity.setEvent_type(eventEntity.getEvent_type().toLowerCase());
+			postedEventDao.updateEvent(userId, eventId, eventEntity);
+		}else {
+			throw new InvalidUpdateEventRequestException();
+		}
+	}
+	
+	
+	
+	
+	
 	
 	public void deleteEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, SubscribedEventNotFoundException {
 		if(EAUtil.canBePostedEventId(eventId)) {
