@@ -1,9 +1,12 @@
 package com.easyapper.eventsmicroservice.utility;
 
+import java.lang.reflect.Array;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,9 +49,20 @@ public class EAUtil {
 	
 	public static String getUserId(String postedEventId) {
 		String[] arrStr = postedEventId.split("_");
-		if(arrStr.length >= 2) {
+		if(arrStr.length == 3) {
 			return arrStr[1];
-		}else {
+		} else if(arrStr.length > 3) {
+			StringBuffer userId = new StringBuffer();
+			for(int indexArr = 0 ; indexArr < arrStr.length ; indexArr++) {
+				if(indexArr == 0 || indexArr == (arrStr.length - 1))
+					continue;
+				else if(indexArr == (arrStr.length - 2))
+					userId.append(arrStr[indexArr]);
+				else
+					userId.append(arrStr[indexArr] + "_");
+			}
+			return userId.toString();
+		} else {
 			return null;
 		}
 		

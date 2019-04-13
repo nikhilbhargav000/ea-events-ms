@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.easyapper.eventsmicroservice.dao.helper.DaoHepler;
@@ -159,9 +160,9 @@ public class PostedEventDaoImpl implements PostedEventDao{
 				if(eventEntity == null) {
 					throw new EventIdNotExistException();
 				}
-				updateEventEntity.set_id(eventId);
-				updateEventEntity.setUser_id(userId);
-				mongoTemplate.save(updateEventEntity, collectionName);
+				Update update = new Update();
+				this.updateEventFields(update, eventEntity, updateEventEntity);
+				mongoTemplate.updateFirst(query, update, collectionName);
 			}else {
 				throw new UserIdNotExistException();
 			}
@@ -175,6 +176,31 @@ public class PostedEventDaoImpl implements PostedEventDao{
 			}
 			throw new EasyApperDbException();
 		}
+	}
+	
+	private void updateEventFields(Update update, PostedEventEntity existingEntity
+			, PostedEventEntity updateEntity) {
+		daoHelper.addUpdateForField(updateEntity.getEvent_category(), "event_category", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_subcategory(), "event_subcategory", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_location().getLongitude(), "event_location.longitude", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_location().getLatitude(), "event_location.latitude", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_location().getAddress().getCity(), "event_location.address.city", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_location().getAddress().getStreet(), "event_location.address.street", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_location().getAddress().getPin(), "event_location.address.pin", update);
+		daoHelper.addUpdateForField(updateEntity.getOrganizer_email(), "organizer_email", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_name(), "event_name", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_description(), "event_description", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_image_url(), "event_image_url", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_start_date(), "event_start_date", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_last_date(), "event_last_date", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_min_age(), "event_min_age", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_max_age(), "event_max_age", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_price(), "event_price", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_booking().getUrl(), "event_booking.url", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_booking().getInquiry_url(), "event_booking.inquiry_url", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_approved(), "event_approved", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_start_time(), "event_start_time", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_end_time(), "event_end_time", update);
 	}
 	
 	@Override

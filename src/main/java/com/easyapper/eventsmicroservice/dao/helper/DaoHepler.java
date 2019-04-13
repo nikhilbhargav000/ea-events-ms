@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
@@ -19,6 +20,12 @@ public class DaoHepler {
 	@Autowired
 	EAValidator validator;
 
+	public void addUpdateForField(final Object updateValue, final String dbEntityField, Update update) {
+		if(updateValue != null) {
+			update.set(dbEntityField, updateValue);
+		}
+	}
+	
 	public void addSearchCriteriaForString(final String paramKey, final String dbEntityField, Query query, final Map<String, String> paramMap) throws InvalidTimeFormatException, InvalidDateFormatException {
 		if(paramMap.get(paramKey) != null) {
 			Pattern alikeCaseInsentitvePattern = Pattern.compile(Pattern.quote(paramMap.get(paramKey)) , Pattern.CASE_INSENSITIVE);

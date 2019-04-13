@@ -3,6 +3,7 @@ package com.easyapper.eventsmicroservice.translator;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -43,9 +44,12 @@ public class EventsTranslator {
 	}
 	
 	public static EventDto getEventDto(PostedEventEntity eventEntity) {
-		LocationSubEntity locationEntity = eventEntity.getEvent_location();
-		AddressSubEntity addressEntity = locationEntity.getAddress();
-		EventBookingSubEntity bookingEntity = eventEntity.getEvent_booking();
+		LocationSubEntity locationEntity = Optional.ofNullable( eventEntity.getEvent_location())
+				.orElseGet(() -> new LocationSubEntity());
+		AddressSubEntity addressEntity = Optional.ofNullable(locationEntity.getAddress())
+				.orElseGet(() -> new AddressSubEntity()) ;
+		EventBookingSubEntity bookingEntity = Optional.ofNullable(eventEntity.getEvent_booking())
+				.orElseGet(() -> new EventBookingSubEntity());
 		
 		AddressDto addressDto = new AddressDto(addressEntity.getId(), addressEntity.getCity(),
 				addressEntity.getStreet(), addressEntity.getPin());
@@ -72,9 +76,13 @@ public class EventsTranslator {
 	}
 	
 	public static PostedEventEntity getPostedEventEntity(EventDto evenDto) {
-		LocationDto locationDto = evenDto.getEvent_location();
-		AddressDto addressDto = locationDto.getAddress();
-		EventBookingDto bookingDto = evenDto.getEvent_booking();
+		LocationDto locationDto = Optional.ofNullable(evenDto.getEvent_location())
+				.orElseGet(() -> new LocationDto());
+		AddressDto addressDto = Optional.ofNullable(locationDto.getAddress())
+				.orElseGet(() -> new AddressDto());
+		EventBookingDto bookingDto = Optional.ofNullable(evenDto.getEvent_booking())
+				.orElseGet(() -> new EventBookingDto());
+		
 		AddressSubEntity addressSubEntity = new AddressSubEntity(addressDto.getId(),
 				addressDto.getCity(), addressDto.getStreet(), addressDto.getPin());
 		LocationSubEntity locationSubEntity = new LocationSubEntity(

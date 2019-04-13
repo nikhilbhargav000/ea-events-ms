@@ -202,68 +202,6 @@ public class EAValidator {
 		return true;
 	}
 	
-	private boolean isValidEventDateAndTime(EventDto eventDto) {
-		//Dates
-		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
-			return false;
-		} 
-		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
-			return false;
-		} 
-		if(eventDto.getEvent_start_date() != null && 
-				eventDto.getEvent_last_date() != null &&
-				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
-			return false;
-		}
-		//Time
-		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
-			return false;
-		}
-		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
-			return false;
-		}
-		if(eventDto.getEvent_start_time() != null &&
-				eventDto.getEvent_end_time() != null &&
-				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
-			return false;
-		}
-		return true;
-	}
-	
-	private boolean isValidUpdateEventDateAndTime(EventDto eventDto, EventDto existingEventDto) {
-		//Date And Time 
-		if(!this.isValidEventDateAndTime(eventDto)) {
-			return false;
-		}
-		//Date with Existing event
-		if(eventDto.getEvent_start_date() != null && 
-				eventDto.getEvent_last_date() == null &&
-				existingEventDto.getEvent_last_date() != null && 
-				!isValidLastDate(eventDto.getEvent_start_date(), existingEventDto.getEvent_last_date())) {
-			return false;
-		}
-		if(eventDto.getEvent_start_date() == null && 
-				eventDto.getEvent_last_date() != null &&
-				existingEventDto.getEvent_start_date() != null &&
-				!isValidLastDate(existingEventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
-			return false;
-		}
-		//Time with Existing event
-		if(eventDto.getEvent_start_time() != null &&
-				eventDto.getEvent_end_time() == null &&
-				existingEventDto.getEvent_end_time() != null &&
-				!isValidEndTime(eventDto.getEvent_start_time(), existingEventDto.getEvent_end_time())) {
-			return false;
-		}
-		if(eventDto.getEvent_start_time() == null &&
-				eventDto.getEvent_end_time() != null &&
-				existingEventDto.getEvent_start_time() != null &&
-				!isValidEndTime(existingEventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
-			return false;
-		}
-		return true;
-	}
-	
 	public boolean isValidUpdatePostedEvent(EventDto eventDto, EventDto existingEventDto) throws EasyApperDbException {
 		//Event Type
 		if(!isValidEventType(eventDto.getEvent_type())) {
@@ -287,6 +225,8 @@ public class EAValidator {
 		}
 		return true;
 	}
+	
+	//SubscricedUpdateEventValidator
 	
 	public boolean isValidCategory(CategoryDto categoryDto) {
 		if(categoryDto.getId() == 0) {
@@ -403,6 +343,68 @@ public class EAValidator {
 			LocalTime locaTime = LocalTime.parse(strTime, formatter);
 		}catch(DateTimeParseException e) {
 			logger.warning("Invalid time format : " + strTime, e);
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean isValidEventDateAndTime(EventDto eventDto) {
+		//Dates
+		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
+			return false;
+		} 
+		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
+			return false;
+		} 
+		if(eventDto.getEvent_start_date() != null && 
+				eventDto.getEvent_last_date() != null &&
+				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+			return false;
+		}
+		//Time
+		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
+			return false;
+		}
+		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
+			return false;
+		}
+		if(eventDto.getEvent_start_time() != null &&
+				eventDto.getEvent_end_time() != null &&
+				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean isValidUpdateEventDateAndTime(EventDto eventDto, EventDto existingEventDto) {
+		//Date And Time 
+		if(!this.isValidEventDateAndTime(eventDto)) {
+			return false;
+		}
+		//Date with Existing event
+		if(eventDto.getEvent_start_date() != null && 
+				eventDto.getEvent_last_date() == null &&
+				existingEventDto.getEvent_last_date() != null && 
+				!isValidLastDate(eventDto.getEvent_start_date(), existingEventDto.getEvent_last_date())) {
+			return false;
+		}
+		if(eventDto.getEvent_start_date() == null && 
+				eventDto.getEvent_last_date() != null &&
+				existingEventDto.getEvent_start_date() != null &&
+				!isValidLastDate(existingEventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
+			return false;
+		}
+		//Time with Existing event
+		if(eventDto.getEvent_start_time() != null &&
+				eventDto.getEvent_end_time() == null &&
+				existingEventDto.getEvent_end_time() != null &&
+				!isValidEndTime(eventDto.getEvent_start_time(), existingEventDto.getEvent_end_time())) {
+			return false;
+		}
+		if(eventDto.getEvent_start_time() == null &&
+				eventDto.getEvent_end_time() != null &&
+				existingEventDto.getEvent_start_time() != null &&
+				!isValidEndTime(existingEventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
 			return false;
 		}
 		return true;
