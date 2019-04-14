@@ -105,29 +105,33 @@ public class UserService {
 	}
 	
 	public void updateEvent(String userId, String eventId, 
-			EventDto eventDto) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, InvalidPostedEventIdException, InvalidUpdateEventRequestException {
+			EventDto eventDto) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, InvalidPostedEventIdException, InvalidUpdateEventRequestException, SubscribedEventNotFoundException {
 		if(eventDto.getEvent_type().equals(EAConstants.EVENT_TYPE_POSTED)) {
-			
 			this.updatePostedEvent(userId, eventId, eventDto);
-			
-//			PostedEventEntity eventEntity = eventsTranslator.getPostedEventEntity(eventDto);
-//			eventEntity.set_id(null);
-//			eventEntity.setUser_id(userId);
-//			eventEntity.setEvent_type(eventEntity.getEvent_type().toLowerCase());
-//			postedEventDao.updateEvent(userId, eventId, eventEntity);
 		}else if(eventDto.getEvent_type().equals(EAConstants.EVENT_TYPE_SUBSCRIBED)) {
-			if(!validator.isValidPostedEventId(eventDto.getPosted_event_id())) {
-				throw new InvalidPostedEventIdException();
-			}
+			this.updateSubscribedEvent(userId, eventId, eventDto);
+//			if(!validator.isValidPostedEventId(eventDto.getPosted_event_id())) {
+//				throw new InvalidPostedEventIdException();
+//			}
+//			SubscribedEventEntity subcEventEntity = eventsTranslator.getSubcribedEventEntity(eventDto);
+//			subcEventEntity.set_id(null);
+//			subcEventEntity.setUser_id(userId);
+//			subscribedEventDao.updateEvent(eventId, subcEventEntity);
+		}
+	}
+	
+	private void updateSubscribedEvent(String userId, String eventId, 
+			EventDto eventDto) throws InvalidUpdateEventRequestException, EventIdNotExistException, InvalidPostedEventIdException, SubscribedEventNotFoundException, EasyApperDbException {
+		EventDto existingEventDto = this.getSubscribedEvent(userId, eventId);
+		if(validator.isValidUpdateSubscribedEvent(eventDto, existingEventDto)) {
 			SubscribedEventEntity subcEventEntity = eventsTranslator.getSubcribedEventEntity(eventDto);
 			subcEventEntity.set_id(null);
 			subcEventEntity.setUser_id(userId);
 			subscribedEventDao.updateEvent(eventId, subcEventEntity);
+		}else {
+			throw new InvalidUpdateEventRequestException();
 		}
 	}
-	
-	
-	
 	
 	
 	private void updatePostedEvent(String userId, String eventId, 

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
+import com.easyapper.eventsmicroservice.exception.InvalidPostedEventIdException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.NoExtensionFoundException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
@@ -94,30 +95,6 @@ public class EAValidator {
 		if(!this.isValidEventDateAndTime(eventDto)) {
 			return false;
 		}
-//		//Dates
-//		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
-//			return false;
-//		} 
-//		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
-//			return false;
-//		} 
-//		if(eventDto.getEvent_start_date() != null && 
-//				eventDto.getEvent_last_date() != null &&
-//				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
-//			return false;
-//		}
-//		//Time
-//		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
-//			return false;
-//		}
-//		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
-//			return false;
-//		}
-//		if(eventDto.getEvent_start_time() != null &&
-//				eventDto.getEvent_end_time() != null &&
-//				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
-//			return false;
-//		}
 		//Location
 		if(eventDto.getEvent_location() == null) {
 			logger.warning("event_location should not be null for posted events");
@@ -227,6 +204,26 @@ public class EAValidator {
 	}
 	
 	//SubscricedUpdateEventValidator
+	public boolean isValidUpdateSubscribedEvent(EventDto eventDto, EventDto existingEventDto) throws EasyApperDbException, InvalidPostedEventIdException  {
+		//Event Type
+		if(!isValidEventType(eventDto.getEvent_type())) {
+			return false;
+		} 
+		if(!eventDto.getEvent_type().equals(EAConstants.EVENT_TYPE_SUBSCRIBED)) {
+			logger.warning("event_type cannot be other then subscribed");
+			return false;
+		}
+		//PostedEventId
+		if(eventDto.getPosted_event_id() != null && !this.isValidPostedEventId(eventDto.getPosted_event_id())) {
+			logger.warning("event_type cannot be other then subscribed");
+			return false;
+		}
+		//Dates
+		if(!this.isValidUpdateEventDateAndTime(eventDto, existingEventDto)) {
+			return false;
+		}
+		return true;
+	}
 	
 	public boolean isValidCategory(CategoryDto categoryDto) {
 		if(categoryDto.getId() == 0) {
@@ -370,7 +367,8 @@ public class EAValidator {
 		}
 		if(eventDto.getEvent_start_time() != null &&
 				eventDto.getEvent_end_time() != null &&
-				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
+				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time(), 
+						eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
 			return false;
 		}
 		return true;
@@ -395,22 +393,32 @@ public class EAValidator {
 			return false;
 		}
 		//Time with Existing event
-		if(eventDto.getEvent_start_time() != null &&
-				eventDto.getEvent_end_time() == null &&
-				existingEventDto.getEvent_end_time() != null &&
-				!isValidEndTime(eventDto.getEvent_start_time(), existingEventDto.getEvent_end_time())) {
-			return false;
+		String strStartDate = eventDto.getEvent_start_date() != null ? eventDto.getEvent_start_date() :
+			existingEventDto.getEvent_start_date() ;
+		String strLastDate = eventDto.getEvent_last_date() != null ? eventDto.getEvent_last_date() : 
+			existingEventDto.getEvent_last_date();
+			//If start_date and last_date is same
+		if(this.areDatesEqual(strStartDate, strLastDate)) {
+			if(eventDto.getEvent_start_time() != null &&
+					eventDto.getEvent_end_time() == null &&
+					existingEventDto.getEvent_end_time() != null &&
+					!isValidEndTime(eventDto.getEvent_start_time(), existingEventDto.getEvent_end_time(), 
+							strStartDate, strLastDate)) {
+				return false;
+			}
+			if(eventDto.getEvent_start_time() == null &&
+					eventDto.getEvent_end_time() != null &&
+					existingEventDto.getEvent_start_time() != null &&
+					!isValidEndTime(existingEventDto.getEvent_start_time(), eventDto.getEvent_end_time(), 
+							strStartDate, strLastDate)) {
+				return false;
+			}
 		}
-		if(eventDto.getEvent_start_time() == null &&
-				eventDto.getEvent_end_time() != null &&
-				existingEventDto.getEvent_start_time() != null &&
-				!isValidEndTime(existingEventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
-			return false;
-		}
-		return true;
+			return true;
 	}
 	
-	private static boolean isValidEndTime(String strStartTime, String strEndTime) {
+	private boolean isValidEndTime(String strStartTime, String strEndTime, String strStartDate , 
+			String strLastDate) {
 		if(strStartTime == null || strEndTime == null) {
 			logger.warning("Null value for start_time or end_time");
 			return false;
@@ -418,12 +426,32 @@ public class EAValidator {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(EAConstants.TIME_FORMAT_PATTERN);
 		LocalTime startLocalDate = LocalTime.parse(strStartTime, formatter);
 		LocalTime endLocalDate = LocalTime.parse(strEndTime, formatter);
-		if(!endLocalDate.isAfter(startLocalDate)) {
-			logger.warning("Invalid end_time : end_time should be greater then start_time : end_time : "
-					+ "" + strEndTime);
-			return false;
+//		String strStartDate = eventDto.getEvent_start_date();
+//		String strLastDate = eventDto.getEvent_last_date();
+		if(strStartDate != null && strLastDate != null &&
+				this.areDatesEqual(strStartDate, strLastDate)) {
+			if(!endLocalDate.isAfter(startLocalDate)) {
+				logger.warning("Invalid end_time : end_time should be greater then start_time : end_time : "
+						+ "" + strEndTime);
+				return false;
+			}
 		}
 		return true;
+	}
+	
+	private boolean areDatesEqual(String strStartDate, String strLastDate) {
+		if(strStartDate == null || strLastDate == null) {
+			logger.warning("Null value for start_date or last_date");
+			return false;
+		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(EAConstants.DATE_FORMAT_PATTERN);
+		LocalDate startLocalDate = LocalDate.parse(strStartDate, formatter);
+		LocalDate endLocalDate = LocalDate.parse(strLastDate, formatter);
+		if(startLocalDate != null && endLocalDate != null && 
+				endLocalDate.isEqual(startLocalDate) ) {
+			return true;
+		}
+		return false;
 	}
 	
 	private static boolean isValidLastDate(String strStartDate, String strLastDate) {

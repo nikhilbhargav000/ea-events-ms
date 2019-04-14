@@ -158,14 +158,11 @@ public class UserApi {
 					HttpStatus.BAD_REQUEST);
 		}
 		try {
-//			if(!validator.isValidEvent(eventUpdateDto)) {
-//				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-//			}
 			userService.updateEvent(userId, eventId, eventUpdateDto);
 		} catch (UserIdNotExistException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-		} catch (EventIdNotExistException e) {
+		} catch (EventIdNotExistException | SubscribedEventNotFoundException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		} catch (InvalidPostedEventIdException | InvalidUpdateEventRequestException e) {

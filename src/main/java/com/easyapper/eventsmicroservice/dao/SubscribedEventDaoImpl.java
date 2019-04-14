@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.easyapper.eventsmicroservice.dao.helper.DaoHepler;
+import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
@@ -19,6 +21,7 @@ import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
+import com.mongodb.client.result.UpdateResult;
 
 @Repository
 public class SubscribedEventDaoImpl implements SubscribedEventDao {
@@ -67,8 +70,11 @@ public class SubscribedEventDaoImpl implements SubscribedEventDao {
 			if(subcEventEntity == null) {
 				throw new EventIdNotExistException();
 			}
-			updateSubcEventEntity.set_id(subcEventEntity.get_id());
-			mongoTemplate.save(updateSubcEventEntity);
+//			updateSubcEventEntity.set_id(subcEventEntity.get_id());
+//			mongoTemplate.save(updateSubcEventEntity);
+			Update update = new Update();
+			this.updateEventFields(update, updateSubcEventEntity);
+			mongoTemplate.updateFirst(query, update, SubscribedEventEntity.class);
 		}catch(Exception e) {
 			if(e instanceof EventIdNotExistException) {
 				throw new EventIdNotExistException();
@@ -108,11 +114,21 @@ public class SubscribedEventDaoImpl implements SubscribedEventDao {
 	
 	private void addSearchParams(Query query, final Map<String, String> paramMap) throws InvalidTimeFormatException, InvalidDateFormatException {
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_POSTED_EVENT_ID_KEY, "post_event_id", query, paramMap);
+		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_USER_ID_KEY, "user_id", query, paramMap);
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_TYPE_KEY, "event_type", query, paramMap);
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_START_DATE_FROM_KEY, EAConstants.EVENT_START_DATE_TO_KEY, "event_start_date", query, paramMap);
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_LAST_DATE_FROM_KEY, EAConstants.EVENT_LAST_DATE_TO_KEY, "event_last_date", query, paramMap);
 		daoHelper.addSearchCriteriaForTime(EAConstants.EVENT_START_TIME_FROM_KEY, EAConstants.EVENT_START_TIME_TO_KEY, "event_start_time", query, paramMap);
 		daoHelper.addSearchCriteriaForTime(EAConstants.EVENT_END_TIME_FROM_KEY, EAConstants.EVENT_END_TIME_TO_KEY, "event_end_time", query, paramMap);
+	}
+
+	private void updateEventFields(Update update, SubscribedEventEntity updateEntity) {
+		daoHelper.addUpdateForField(updateEntity.getUser_id(), "user_id", update);
+		daoHelper.addUpdateForField(updateEntity.getPost_event_id(), "post_event_id", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_start_date(), "event_start_date", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_last_date(), "event_last_date", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_start_time(), "event_start_time", update);
+		daoHelper.addUpdateForField(updateEntity.getEvent_end_time(), "event_end_time", update);
 	}
 	
 }

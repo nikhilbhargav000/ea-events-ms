@@ -161,7 +161,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 					throw new EventIdNotExistException();
 				}
 				Update update = new Update();
-				this.updateEventFields(update, eventEntity, updateEventEntity);
+				this.updateEventFields(update, updateEventEntity);
 				mongoTemplate.updateFirst(query, update, collectionName);
 			}else {
 				throw new UserIdNotExistException();
@@ -178,8 +178,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		}
 	}
 	
-	private void updateEventFields(Update update, PostedEventEntity existingEntity
-			, PostedEventEntity updateEntity) {
+	private void updateEventFields(Update update, PostedEventEntity updateEntity) {
 		daoHelper.addUpdateForField(updateEntity.getEvent_category(), "event_category", update);
 		daoHelper.addUpdateForField(updateEntity.getEvent_subcategory(), "event_subcategory", update);
 		daoHelper.addUpdateForField(updateEntity.getEvent_location().getLongitude(), "event_location.longitude", update);

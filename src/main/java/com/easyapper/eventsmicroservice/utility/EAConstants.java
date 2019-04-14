@@ -70,6 +70,7 @@ public final class EAConstants {
 	public static final String EVENT_START_TIME_TO_KEY = "event_start_time_to";
 	public static final String EVENT_END_TIME_FROM_KEY = "event_end_time_from";
 	public static final String EVENT_END_TIME_TO_KEY = "event_end_time_to";
+	public static final String EVENT_USER_ID_KEY = "user_id";
 	
 	public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String TIME_FORMAT_PATTERN = "HH:mm";
