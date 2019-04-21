@@ -22,11 +22,13 @@ public class CategoriesTranslator {
 
 	public CategoryDto getCategoryDto(CategoryEntity categoryEntity) {
 		return new CategoryDto(categoryEntity.get_id(), 
-				categoryEntity.getName(), categoryEntity.getImage_url());
+				categoryEntity.getName(), categoryEntity.getImage_url(), 
+				categoryEntity.getRegex_file_name());
 	}
 	public CategoryEntity getCategoryEntity(CategoryDto categoryDto) {
 		return new CategoryEntity(categoryDto.getId(), 
-				categoryDto.getName(), categoryDto.getImage_url());
+				categoryDto.getName(), categoryDto.getImage_url(), 
+				categoryDto.getRegexFileName());
 	}
 }
 

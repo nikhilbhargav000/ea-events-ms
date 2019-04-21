@@ -426,8 +426,6 @@ public class EAValidator {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(EAConstants.TIME_FORMAT_PATTERN);
 		LocalTime startLocalDate = LocalTime.parse(strStartTime, formatter);
 		LocalTime endLocalDate = LocalTime.parse(strEndTime, formatter);
-//		String strStartDate = eventDto.getEvent_start_date();
-//		String strLastDate = eventDto.getEvent_last_date();
 		if(strStartDate != null && strLastDate != null &&
 				this.areDatesEqual(strStartDate, strLastDate)) {
 			if(!endLocalDate.isAfter(startLocalDate)) {

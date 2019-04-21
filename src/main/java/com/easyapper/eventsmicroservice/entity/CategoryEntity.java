@@ -18,5 +18,5 @@ public class CategoryEntity {
 	private int _id;
 	private String name;
 	private String image_url;
-
+	private String regex_file_name;
 }

@@ -85,6 +85,7 @@ public class UserApi {
 		}
 		return new ResponseEntity<String>(id, HttpStatus.CREATED); 
 	}
+	
 	/**
 	 * Store subscribed event
 	 * 
