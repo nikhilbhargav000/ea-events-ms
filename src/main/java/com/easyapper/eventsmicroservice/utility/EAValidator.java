@@ -49,7 +49,7 @@ public class EAValidator {
 			if(fileExtension.toLowerCase().equals(EAConstants.PNG_EXTENTION) ||
 					fileExtension.toLowerCase().equals(EAConstants.JPEG_EXTENTION)) {
 				return true;
-			}else {
+			} else {
 				logger.warning(EAConstants.PNG_EXTENTION + " & " + EAConstants.JPEG_EXTENTION);
 				return false;
 			}
@@ -137,30 +137,6 @@ public class EAValidator {
 		if(!this.isValidEventDateAndTime(eventDto)) {
 			return false;
 		}
-//		//Dates
-//		if(eventDto.getEvent_start_date() != null && !isValidDate(eventDto.getEvent_start_date())) {
-//			return false;
-//		} 
-//		if(eventDto.getEvent_last_date() != null && !isValidDate(eventDto.getEvent_last_date())) {
-//			return false;
-//		} 
-//		if(eventDto.getEvent_start_date() != null && 
-//				eventDto.getEvent_last_date() != null &&
-//				!isValidLastDate(eventDto.getEvent_start_date(), eventDto.getEvent_last_date())) {
-//			return false;
-//		}
-//		//Time
-//		if(eventDto.getEvent_start_time() != null && !isValidTime(eventDto.getEvent_start_time())) {
-//			return false;
-//		}
-//		if(eventDto.getEvent_end_time() != null && !isValidTime(eventDto.getEvent_end_time())) {
-//			return false;
-//		}
-//		if(eventDto.getEvent_start_time() != null &&
-//				eventDto.getEvent_end_time() != null &&
-//				!isValidEndTime(eventDto.getEvent_start_time(), eventDto.getEvent_end_time())) {
-//			return false;
-//		}
 		//PostedEventId
 		if(eventDto.getPosted_event_id() == null) {
 			logger.warning("posted_event_id cannot be null for subcribed events");

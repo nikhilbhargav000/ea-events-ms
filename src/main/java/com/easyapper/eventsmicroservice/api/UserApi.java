@@ -74,7 +74,7 @@ public class UserApi {
 			}
 			id = userService.createPostedEvent(userId, eventPostDto);
 		} catch (PostedEventExistsException e) {
-			logger.warning(e.getMessage(), e);
+			logger.warning("Unable to create Event | Event already Exists | Event : " + eventPostDto);
 			return new ResponseEntity<String>(HttpStatus.CONFLICT);
 		} catch (EasyApperDbException e) {
 			logger.warning(e.getMessage(), e);

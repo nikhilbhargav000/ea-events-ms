@@ -72,8 +72,6 @@ public class EAUtil {
 		StringBuilder stringBuilder = new StringBuilder();
 		if(eventDto.getEvent_category() != null)
 			stringBuilder.append(eventDto.getEvent_category());
-		if(eventDto.getEvent_subcategory() != null)
-			stringBuilder.append(eventDto.getEvent_subcategory());
 		if(eventDto.getEvent_name() != null)
 			stringBuilder.append(eventDto.getEvent_name());
 		if(eventDto.getEvent_description() != null)
