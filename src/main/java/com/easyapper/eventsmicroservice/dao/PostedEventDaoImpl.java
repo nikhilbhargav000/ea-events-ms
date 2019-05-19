@@ -5,15 +5,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation.GroupOperationBuilder;
+import org.springframework.data.mongodb.core.aggregation.LimitOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.easyapper.eventsmicroservice.dao.helper.DaoHepler;
+import com.easyapper.eventsmicroservice.entity.EventProviderEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
@@ -37,6 +48,10 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	DaoHepler daoHelper;
 	@Autowired
 	MongoTemplate mongoTemplate;
+
+	private final String ID_FIELD = "_id";
+	private final String USER_ID_FIELD = "user_id";
+	private final String ORGANIZER_EMAIL_FIELD = "organizer_email"; 
 	
 	@Override
 	public String insertEvent(PostedEventEntity eventEntity) throws EasyApperDbException {
@@ -64,8 +79,8 @@ public class PostedEventDaoImpl implements PostedEventDao{
 			String collectionName = EAUtil.getEventCollectionName(userId);
 			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
 				Query query = new Query();
-				query.addCriteria(Criteria.where("user_id").is(userId));
-				query.addCriteria(Criteria.where("_id").is(eventId));
+				query.addCriteria(Criteria.where(this.USER_ID_FIELD).is(userId));
+				query.addCriteria(Criteria.where(this.ID_FIELD).is(eventId));
 				eventEntity = mongoTemplate.findOne(query, PostedEventEntity.class, collectionName);
 			}else {
 				throw new UserIdNotExistException();
@@ -94,13 +109,13 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		this.addSearchParams(query, paramMap);
 		try {
 			String collectionName = EAUtil.getEventCollectionName(userId);
-			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
+			if (mongoTemplate.getCollectionNames().contains(collectionName)) {
 				List<PostedEventEntity> eventList = mongoTemplate.find(query, PostedEventEntity.class, collectionName);
 				allEventList.addAll(eventList);
-			}else {
+			} else {
 				return new ArrayList<>();
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			logger.warning(e.getMessage(), e);
 			throw new EasyApperDbException();
 		}
@@ -116,7 +131,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ADDRESS_CITY_KEY, "event_location.address.city", query, paramMap);
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ADDRESS_STREET_KEY, "event_location.address.street", query, paramMap);
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ADDRESS_PIN_KEY, "event_location.address.pin", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ORGANIZER_EMAIL_KEY, "organizer_email", query, paramMap);
+		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ORGANIZER_EMAIL_KEY, this.ORGANIZER_EMAIL_FIELD, query, paramMap);
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_NAME_KEY, "event_name", query, paramMap);
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_DESCRIBTION_KEY, "event_description", query, paramMap);
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_IMAGE_URL_KEY, "event_image_url", query, paramMap);
@@ -129,6 +144,8 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_LAST_DATE_FROM_KEY, EAConstants.EVENT_LAST_DATE_TO_KEY, "event_last_date", query, paramMap);
 	}
 	
+
+	
 	@Override
 	public long getEventsCount(String userId) 
 			throws EasyApperDbException{
@@ -138,13 +155,59 @@ public class PostedEventDaoImpl implements PostedEventDao{
 			String collectionName = EAUtil.getEventCollectionName(userId);
 			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
 				Query query = new Query();
-				mongoTemplate.count(query, collectionName);
+				count = mongoTemplate.count(query, collectionName);
 			}
 		}catch(Exception e) {
 			logger.warning(e.getMessage(), e);
 			throw new EasyApperDbException();
 		}
 		return count;
+	}
+	
+	@Override
+	public List<EventProviderEntity> getEventProviders(String userId, int page, int size, long skip)
+			throws EasyApperDbException {
+		List<EventProviderEntity> eventProviders = new ArrayList<>();
+		try {
+			String collectionName = EAUtil.getEventCollectionName(userId);
+			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
+				MatchOperation matchStage = new MatchOperation(
+						Criteria.where(ORGANIZER_EMAIL_FIELD).exists(true));
+				GroupOperation groupStage = Aggregation.group(Fields.fields(this.ORGANIZER_EMAIL_FIELD));
+				SkipOperation skipStage = Aggregation.skip(daoHelper.getTotalSkip(page, size, skip));
+				LimitOperation limitStage = Aggregation.limit(size);
+				Aggregation aggregation = Aggregation.newAggregation(matchStage, groupStage, 
+						skipStage, limitStage);
+				AggregationResults<EventProviderEntity> aggregationResults = mongoTemplate.aggregate(aggregation, collectionName, EventProviderEntity.class);
+				if (CollectionUtils.isNotEmpty(aggregationResults.getMappedResults())) {
+					eventProviders = aggregationResults.getMappedResults();
+				}
+			}
+		} catch (Exception e) {
+			logger.warning(e.getMessage(), e);
+			throw new EasyApperDbException();
+		}
+		
+		return eventProviders;
+	}
+	
+	@Override
+	public long getEventProvidersCount(String userId)
+			throws EasyApperDbException {
+		List<EventProviderEntity> eventProviders = new ArrayList<>();
+		//Query
+		Query query = new Query();
+		query.fields().include("organizer_email");
+		try {
+			String collectionName = EAUtil.getEventCollectionName(userId);
+			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
+				eventProviders = mongoTemplate.findDistinct(query, "organizer_email", collectionName, EventProviderEntity.class);
+			}				
+		} catch (Exception e) {
+			logger.warning(e.getMessage(), e);
+			throw new EasyApperDbException();
+		}
+		return eventProviders.size();
 	}
 	
 	@Override

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.easyapper.eventsmicroservice.entity.AddressSubEntity;
 import com.easyapper.eventsmicroservice.entity.EventBookingSubEntity;
+import com.easyapper.eventsmicroservice.entity.EventProviderEntity;
 import com.easyapper.eventsmicroservice.entity.LocationSubEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
@@ -16,6 +17,7 @@ import com.easyapper.eventsmicroservice.model.AddressDto;
 import com.easyapper.eventsmicroservice.model.EventBookingDto;
 import com.easyapper.eventsmicroservice.model.EventDto;
 import com.easyapper.eventsmicroservice.model.LocationDto;
+import com.easyapper.eventsmicroservice.model.ProviderDto;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 
 @Component
@@ -121,6 +123,15 @@ public class EventsTranslator {
 			eventDtoList.add(this.getEventDto(subcEventEntity));
 		}
 		return eventDtoList;
+	}
+	
+	public List<ProviderDto> getProviderDtoList(List<EventProviderEntity> providerEntities){
+		List<ProviderDto> providerDtos = new ArrayList<>();
+		providerEntities.stream().forEach((providerEntity) -> {
+			providerDtos.add(new ProviderDto(providerEntity.getOrganizer_email()));
+		});
+		
+		return providerDtos;
 	}
 
 }

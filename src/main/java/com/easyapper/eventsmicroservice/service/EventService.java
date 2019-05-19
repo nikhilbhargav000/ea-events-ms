@@ -39,8 +39,11 @@ public class EventService {
 			if(curPostedEventList.size() == 0) {
 				toSkip -= (this.getPostedEventsCount(userId));
 			}else if(curPostedEventList.size() > 0) {
-				toSkip -= (this.getPostedEventsCount(userId));
+				toSkip = 0;
 				toPickSize -= curPostedEventList.size();
+			}
+			if (toSkip < 0) {
+				toSkip = 0;
 			}
 			allPostedEventList.addAll(curPostedEventList);
 			if(toPickSize <= 0) {
@@ -59,7 +62,7 @@ public class EventService {
 		return eventDto;
 	}
 
-	private List<String> getUserIdList(List<String> eventCollectionNameList){
+	public List<String> getUserIdList(List<String> eventCollectionNameList){
 		List<String> userIdList = new ArrayList<>();
 		for(String eventCollectionName : eventCollectionNameList) {
 			userIdList.add( eventCollectionName.substring( 

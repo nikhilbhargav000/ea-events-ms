@@ -77,4 +77,8 @@ public class DaoHepler {
 		query.limit(size);
 	}
 	
+	public long getTotalSkip(int page, int size, long skip) {
+		return ((page - 1) * size) + skip;
+	}
+		
 }
