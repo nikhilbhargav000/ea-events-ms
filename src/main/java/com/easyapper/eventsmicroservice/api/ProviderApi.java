@@ -3,7 +3,6 @@ package com.easyapper.eventsmicroservice.api;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.model.ProviderDto;
 import com.easyapper.eventsmicroservice.model.ProviderResponseDto;
-import com.easyapper.eventsmicroservice.service.ProviderService;
+import com.easyapper.eventsmicroservice.service.EventService;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 
 @Controller
@@ -25,7 +24,7 @@ public class ProviderApi {
 	EALogger logger;
 	
 	@Autowired
-	ProviderService providerService;
+	EventService eventService;
 	
 	@RequestMapping(value="", method=RequestMethod.GET)
 	public ResponseEntity<ProviderResponseDto> getProviders(@RequestParam(name="page", required=false, defaultValue="1") int page, 
@@ -34,7 +33,7 @@ public class ProviderApi {
 		
 		List<ProviderDto> providers;
 		try {
-			providers = providerService.getProviders(page, total);
+			providers = eventService.getProviders(page, total);
 		} catch (EasyApperDbException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);

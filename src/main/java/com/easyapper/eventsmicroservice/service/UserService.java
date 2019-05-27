@@ -149,10 +149,6 @@ public class UserService {
 	}
 	
 	
-	
-	
-	
-	
 	public void deleteEvent(String userId, String eventId) throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException, SubscribedEventNotFoundException {
 		if(EAUtil.canBePostedEventId(eventId)) {
 			postedEventDao.deleteEvent(userId, eventId);

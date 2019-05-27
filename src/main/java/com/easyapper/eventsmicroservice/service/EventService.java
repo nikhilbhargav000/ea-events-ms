@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.easyapper.eventsmicroservice.dao.PostedEventDao;
+import com.easyapper.eventsmicroservice.entity.EventProviderEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
@@ -15,6 +16,7 @@ import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.model.EventDto;
+import com.easyapper.eventsmicroservice.model.ProviderDto;
 import com.easyapper.eventsmicroservice.translator.EventsTranslator;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
@@ -81,6 +83,32 @@ public class EventService {
 		List<PostedEventEntity> postedEntityList  = postedEventDao.getAllEvent(userId, paramMap, page, size, skip);
 		List<EventDto> postedDtoList = eventsTranslator.getPostedEventDtoList(postedEntityList);
 		return postedDtoList;
+	}
+	
+	public List<ProviderDto> getProviders(int page, int size) throws EasyApperDbException {
+		
+		List<String> eventCollectionNameList = postedEventDao.getAllEventCollectionName();
+		List<String> userIdList = this.getUserIdList(eventCollectionNameList);
+		List<EventProviderEntity> providerEntities = new ArrayList<>();
+		long toSkip = (page-1) * size;
+		int toPickSize = size;
+		for(String userId : userIdList) {
+			List<EventProviderEntity> userEventProviderEntities = postedEventDao.getEventProviders(userId, 1, toPickSize, toSkip); 
+			if(userEventProviderEntities.size() == 0) {
+				toSkip -= postedEventDao.getEventProvidersCount(userId);
+			}else if(userEventProviderEntities.size() > 0) {
+				toSkip = 0;
+				toPickSize -= userEventProviderEntities.size();
+			}
+			providerEntities.addAll(userEventProviderEntities);
+			if(toSkip < 0) {
+				toSkip = 0;
+			}
+			if(toPickSize <= 0) {
+				break;
+			}
+		}
+		return eventsTranslator.getProviderDtoList(providerEntities);
 	}
 	
 }
