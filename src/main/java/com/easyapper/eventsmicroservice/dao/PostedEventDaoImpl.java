@@ -142,6 +142,8 @@ public class PostedEventDaoImpl implements PostedEventDao{
 		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_MAX_AGE_KEY, "event_max_age", query, paramMap);
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_START_DATE_FROM_KEY, EAConstants.EVENT_START_DATE_TO_KEY, "event_start_date", query, paramMap);
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_LAST_DATE_FROM_KEY, EAConstants.EVENT_LAST_DATE_TO_KEY, "event_last_date", query, paramMap);
+		daoHelper.addSearchCriteriaForTime(EAConstants.EVENT_START_TIME_FROM_KEY, EAConstants.EVENT_START_TIME_TO_KEY, "event_start_time", query, paramMap);
+		daoHelper.addSearchCriteriaForTime(EAConstants.EVENT_END_TIME_FROM_KEY, EAConstants.EVENT_END_TIME_TO_KEY, "event_end_time", query, paramMap);
 	}
 	
 
