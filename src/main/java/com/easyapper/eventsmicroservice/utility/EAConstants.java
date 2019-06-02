@@ -78,6 +78,7 @@ public final class EAConstants {
 	public static final String UNDERSCORE = "_";
 	public static final String DOT_REGEX = "\\.";
 	public static final String DOT = ".";
+	public static final String COMMA = ",";
 
 	public static final int INVALID_PAGINATION_VALUE = -1;
 	

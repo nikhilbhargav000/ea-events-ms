@@ -13,10 +13,8 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation.GroupOperationBuilder;
 import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -34,7 +32,6 @@ import com.easyapper.eventsmicroservice.exception.UserIdNotExistException;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
-import com.easyapper.eventsmicroservice.utility.EAValidator;
 import com.mongodb.client.MongoCollection;
 
 @Repository
@@ -42,8 +39,6 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	
 	@Autowired
 	EALogger logger;
-	@Autowired
-	EAValidator validator;
 	@Autowired
 	DaoHepler daoHelper;
 	@Autowired

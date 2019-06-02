@@ -1,5 +1,6 @@
 package com.easyapper.eventsmicroservice.dao.helper;
 
+import java.text.ParseException;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -11,14 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.easyapper.eventsmicroservice.exception.InvalidDateFormatException;
 import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
+import com.easyapper.eventsmicroservice.utility.EALogger;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
-import com.easyapper.eventsmicroservice.utility.EAValidator;
 
 @Component
 public class DaoHepler {
 	
 	@Autowired
-	EAValidator validator;
+	EALogger logger;
 
 	public void addUpdateForField(final Object updateValue, final String dbEntityField, Update update) {
 		if(updateValue != null) {
@@ -34,40 +35,44 @@ public class DaoHepler {
 	}
 	
 	public void addSearchCriteriaForDate(final String paramFromDateKey, final String paramToDateKey, final String dbEntityField, Query query, final Map<String, String> paramMap) throws InvalidDateFormatException {
-		if(paramMap.get(paramFromDateKey) != null && 
-				paramMap.get(paramToDateKey) != null && 
-				validator.isValidDate(paramMap.get(paramFromDateKey)) &&
-				validator.isValidDate(paramMap.get(paramToDateKey)) ) {
+		try {
+			if(paramMap.get(paramFromDateKey) != null && 
+					paramMap.get(paramToDateKey) != null) {
 				query.addCriteria(Criteria.where(dbEntityField)
-						.gte(EAUtil.getDateFormatObj(paramMap.get(paramFromDateKey)))
-						.lte(EAUtil.getDateFormatObj(paramMap.get(paramToDateKey))));
-		}else if(paramMap.get(paramFromDateKey) != null && 
-				validator.isValidDate(paramMap.get(paramFromDateKey))) {
-			query.addCriteria(Criteria.where(dbEntityField)
-					.gte(EAUtil.getDateFormatObj(paramMap.get(paramFromDateKey))));
-		}else if(paramMap.get(paramToDateKey) != null
-				&& validator.isValidDate(paramMap.get(paramToDateKey))) {
-			query.addCriteria(Criteria.where(dbEntityField)
-					.lte(EAUtil.getDateFormatObj(paramMap.get(paramToDateKey))));
+						.gte(EAUtil.getDateFormatObj_WithException(paramMap.get(paramFromDateKey)))
+						.lte(EAUtil.getDateFormatObj_WithException(paramMap.get(paramToDateKey))));
+			}else if(paramMap.get(paramFromDateKey) != null) {
+				query.addCriteria(Criteria.where(dbEntityField)
+						.gte(EAUtil.getDateFormatObj_WithException(paramMap.get(paramFromDateKey))));
+			}else if(paramMap.get(paramToDateKey) != null) {
+				query.addCriteria(Criteria.where(dbEntityField)
+						.lte(EAUtil.getDateFormatObj_WithException(paramMap.get(paramToDateKey))));
+			}
+		} catch (ParseException e) {
+			logger.warning("Invalid date format : " + paramMap.get(paramFromDateKey) + " "
+					+ paramMap.get(paramToDateKey) );
+			throw new InvalidDateFormatException();
 		}
 	}
 	
-	public void addSearchCriteriaForTime(final String paramFromTimeKey, final String paramToTimeKey, final String dbEntityField, Query query, final Map<String, String> paramMap) throws InvalidDateFormatException {
-		if(paramMap.get(paramFromTimeKey) != null && 
-				paramMap.get(paramToTimeKey) != null && 
-				validator.isValidTime(paramMap.get(paramFromTimeKey)) &&
-				validator.isValidTime(paramMap.get(paramToTimeKey)) ) {
+	public void addSearchCriteriaForTime(final String paramFromTimeKey, final String paramToTimeKey, final String dbEntityField, Query query, final Map<String, String> paramMap) throws InvalidTimeFormatException {
+		try {
+			if(paramMap.get(paramFromTimeKey) != null && 
+					paramMap.get(paramToTimeKey) != null) {
+					query.addCriteria(Criteria.where(dbEntityField)
+							.gte(EAUtil.getTimeFormatObj_WithException(paramMap.get(paramFromTimeKey)))
+							.lte(EAUtil.getTimeFormatObj_WithException(paramMap.get(paramToTimeKey))));
+			}else if(paramMap.get(paramFromTimeKey) != null) {
 				query.addCriteria(Criteria.where(dbEntityField)
-						.gte(EAUtil.getTimeFormatObj(paramMap.get(paramFromTimeKey)))
-						.lte(EAUtil.getTimeFormatObj(paramMap.get(paramToTimeKey))));
-		}else if(paramMap.get(paramFromTimeKey) != null && 
-				validator.isValidTime(paramMap.get(paramFromTimeKey))) {
-			query.addCriteria(Criteria.where(dbEntityField)
-					.gte(EAUtil.getTimeFormatObj(paramMap.get(paramFromTimeKey))));
-		}else if(paramMap.get(paramToTimeKey) != null
-				&& validator.isValidTime(paramMap.get(paramToTimeKey))) {
-			query.addCriteria(Criteria.where(dbEntityField)
-					.lte(EAUtil.getTimeFormatObj(paramMap.get(paramToTimeKey))));
+						.gte(EAUtil.getTimeFormatObj_WithException(paramMap.get(paramFromTimeKey))));
+			}else if(paramMap.get(paramToTimeKey) != null) {
+				query.addCriteria(Criteria.where(dbEntityField)
+						.lte(EAUtil.getTimeFormatObj_WithException(paramMap.get(paramToTimeKey))));
+			}
+		} catch(ParseException e) {
+			logger.warning("Invalid date format : " + paramMap.get(paramFromTimeKey) + " "
+					+ paramMap.get(paramToTimeKey));
+			throw new InvalidTimeFormatException();
 		}
 	}
 	

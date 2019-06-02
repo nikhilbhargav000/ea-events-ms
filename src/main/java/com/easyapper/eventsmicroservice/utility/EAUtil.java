@@ -119,6 +119,14 @@ public class EAUtil {
 		}
 	}
 	
+	public static Date getDateFormatObj_WithException(String strDate) throws ParseException {
+		if(strDate == null) {
+			return null;
+		}
+		SimpleDateFormat dateFormat = new SimpleDateFormat(EAConstants.DATE_FORMAT_PATTERN);
+		return dateFormat.parse(strDate);
+	}
+	
 	public static Date getTimeFormatObj(String strTime) {
 		if(strTime == null) {
 			return null;
@@ -130,6 +138,14 @@ public class EAUtil {
 			logger.warning(e.getMessage(), e);
 			return null;
 		}
+	}
+	
+	public static Date getTimeFormatObj_WithException(String strTime) throws ParseException {
+		if (strTime == null) {
+			return null;
+		}
+		SimpleDateFormat dateFormat = new SimpleDateFormat(EAConstants.TIME_FORMAT_PATTERN);
+		return dateFormat.parse(strTime);
 	}
 	
 	public static String getImageRootDir() {
