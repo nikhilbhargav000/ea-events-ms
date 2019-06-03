@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.easyapper.eventsmicroservice.dao.helper.DaoHepler;
-import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
@@ -21,7 +20,6 @@ import com.easyapper.eventsmicroservice.exception.InvalidTimeFormatException;
 import com.easyapper.eventsmicroservice.exception.SubscribedEventNotFoundException;
 import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
-import com.mongodb.client.result.UpdateResult;
 
 @Repository
 public class SubscribedEventDaoImpl implements SubscribedEventDao {
@@ -113,9 +111,15 @@ public class SubscribedEventDaoImpl implements SubscribedEventDao {
 	}
 	
 	private void addSearchParams(Query query, final Map<String, String> paramMap) throws InvalidTimeFormatException, InvalidDateFormatException {
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_POSTED_EVENT_ID_KEY, "post_event_id", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_USER_ID_KEY, "user_id", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_TYPE_KEY, "event_type", query, paramMap);
+		
+		List<Criteria> orOperatorCriterias = daoHelper.createCriteriaList();
+		
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_POSTED_EVENT_ID_KEY, "post_event_id", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_USER_ID_KEY, "user_id", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_TYPE_KEY, "event_type", orOperatorCriterias, paramMap);
+		
+		daoHelper.addAndOperationOnList(query, orOperatorCriterias);
+		
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_START_DATE_FROM_KEY, EAConstants.EVENT_START_DATE_TO_KEY, "event_start_date", query, paramMap);
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_LAST_DATE_FROM_KEY, EAConstants.EVENT_LAST_DATE_TO_KEY, "event_last_date", query, paramMap);
 		daoHelper.addSearchCriteriaForTime(EAConstants.EVENT_START_TIME_FROM_KEY, EAConstants.EVENT_START_TIME_TO_KEY, "event_start_time", query, paramMap);

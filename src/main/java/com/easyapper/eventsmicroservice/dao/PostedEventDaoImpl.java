@@ -118,23 +118,29 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	}
 	
 	private void addSearchParams(Query query, final Map<String, String> paramMap) throws InvalidTimeFormatException, InvalidDateFormatException {
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_TYPE_KEY, "event_type", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_CATEGORY_KEY, "event_category", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_SUB_CATEGORY_KEY, "event_subcategory", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_LOCATION_LONGITUDE_KEY, "event_location.longitude", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_LOCATION_LATITUDE_KEY, "event_location.latitude", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ADDRESS_CITY_KEY, "event_location.address.city", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ADDRESS_STREET_KEY, "event_location.address.street", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ADDRESS_PIN_KEY, "event_location.address.pin", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_ORGANIZER_EMAIL_KEY, this.ORGANIZER_EMAIL_FIELD, query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_NAME_KEY, "event_name", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_DESCRIBTION_KEY, "event_description", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_IMAGE_URL_KEY, "event_image_url", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_PRICE_KEY, "event_price", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_BOOKING_URL_KEY, "event_booking.url", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_BOOKING_INQUIRY_URL_KEY, "event_booking.inquiry_url", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_MIN_AGE_KEY, "event_min_age", query, paramMap);
-		daoHelper.addSearchCriteriaForString(EAConstants.EVENT_MAX_AGE_KEY, "event_max_age", query, paramMap);
+	
+		List<Criteria> orOperatorCriterias = daoHelper.createCriteriaList();
+		
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_TYPE_KEY, "event_type", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_CATEGORY_KEY, "event_category", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_SUB_CATEGORY_KEY, "event_subcategory", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_LOCATION_LONGITUDE_KEY, "event_location.longitude", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_LOCATION_LATITUDE_KEY, "event_location.latitude", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_ADDRESS_CITY_KEY, "event_location.address.city", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_ADDRESS_STREET_KEY, "event_location.address.street", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_ADDRESS_PIN_KEY, "event_location.address.pin", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_ORGANIZER_EMAIL_KEY, this.ORGANIZER_EMAIL_FIELD, orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_NAME_KEY, "event_name", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_DESCRIBTION_KEY, "event_description", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_IMAGE_URL_KEY, "event_image_url", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_PRICE_KEY, "event_price", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_BOOKING_URL_KEY, "event_booking.url", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_BOOKING_INQUIRY_URL_KEY, "event_booking.inquiry_url", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_MIN_AGE_KEY, "event_min_age", orOperatorCriterias, paramMap);
+		daoHelper.addAlikeSearchCriteriaForString(EAConstants.EVENT_MAX_AGE_KEY, "event_max_age", orOperatorCriterias, paramMap);
+		
+		daoHelper.addAndOperationOnList(query, orOperatorCriterias);
+		
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_START_DATE_FROM_KEY, EAConstants.EVENT_START_DATE_TO_KEY, "event_start_date", query, paramMap);
 		daoHelper.addSearchCriteriaForDate(EAConstants.EVENT_LAST_DATE_FROM_KEY, EAConstants.EVENT_LAST_DATE_TO_KEY, "event_last_date", query, paramMap);
 		daoHelper.addSearchCriteriaForTime(EAConstants.EVENT_START_TIME_FROM_KEY, EAConstants.EVENT_START_TIME_TO_KEY, "event_start_time", query, paramMap);
