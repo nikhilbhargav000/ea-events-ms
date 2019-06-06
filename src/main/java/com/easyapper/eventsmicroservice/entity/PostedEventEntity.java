@@ -3,6 +3,7 @@ package com.easyapper.eventsmicroservice.entity;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -32,6 +33,7 @@ public class PostedEventEntity {
 	@DateTimeFormat
 	private Date event_start_date;
 	@DateTimeFormat
+	@Indexed(name="event_last_date_index", expireAfterSeconds=10)
 	private Date event_last_date;
 	private String event_min_age;
 	private String event_max_age;
