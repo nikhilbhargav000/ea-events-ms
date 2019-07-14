@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -16,6 +17,8 @@ import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SkipOperation;
+import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.index.IndexDefinition;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -33,6 +36,7 @@ import com.easyapper.eventsmicroservice.utility.EAConstants;
 import com.easyapper.eventsmicroservice.utility.EALogger;
 import com.easyapper.eventsmicroservice.utility.EAUtil;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Indexes;
 
 @Repository
 public class PostedEventDaoImpl implements PostedEventDao{
@@ -47,6 +51,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	private final String ID_FIELD = "_id";
 	private final String USER_ID_FIELD = "user_id";
 	private final String ORGANIZER_EMAIL_FIELD = "organizer_email"; 
+	private final String EVENT_LAST_DATE = "event_last_date"; 
 	
 	@Override
 	public String insertEvent(PostedEventEntity eventEntity) throws EasyApperDbException {
@@ -301,6 +306,16 @@ public class PostedEventDaoImpl implements PostedEventDao{
 			return true;
 		}
 		return false;
+	}
+	
+	public void createTTLIndexAtLastDate(String collectionName) throws EasyApperDbException {
+		try {
+			IndexDefinition indexDefinition = new Index(EVENT_LAST_DATE, Direction.ASC).expire(0);
+			mongoTemplate.indexOps(collectionName).ensureIndex(indexDefinition);
+		} catch (Exception e) { 
+			logger.warning(e.getMessage(), e);
+			throw new EasyApperDbException();
+		}
 	}
 	
 }

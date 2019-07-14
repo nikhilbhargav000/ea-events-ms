@@ -41,4 +41,6 @@ public interface PostedEventDao {
 	
 	public boolean collectionExists(String collectionName) ;
 	
+	public void createTTLIndexAtLastDate(String collectionName) throws EasyApperDbException ;
+	
 }

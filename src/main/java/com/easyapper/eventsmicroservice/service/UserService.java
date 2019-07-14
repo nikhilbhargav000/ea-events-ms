@@ -59,6 +59,7 @@ public class UserService {
 		PostedEventEntity eventEntity = eventsTranslator.getPostedEventEntity(eventDto);
 		String dbName = EAUtil.getEventCollectionName(userId);
 		String eventId = EAUtil.getPostedEventId(userId, dbSeqFinder.getNextSeqValue(dbName));
+		postedEventDao.createTTLIndexAtLastDate(dbName);
 		eventEntity.set_id(eventId);
 		eventEntity.setUser_id(userId);
 		eventEntity.setEvent_type(eventEntity.getEvent_type().toLowerCase());
@@ -228,5 +229,7 @@ public class UserService {
 		List<EventDto> subcDtoList = eventsTranslator.getSubscribedEventDtoList(subcEntityList);		
 		return new UserEventListsContainerDto(subcDtoList, postedDtoList);
 	}
+	
+	
 	
 }

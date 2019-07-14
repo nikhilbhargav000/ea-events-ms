@@ -34,7 +34,7 @@ public class PostedEventEntity {
 	@DateTimeFormat
 	private Date event_start_date;
 	@DateTimeFormat
-	@Indexed(name="event_last_date_index", expireAfterSeconds=10)
+//	@Indexed(name="event_last_date_index", expireAfterSeconds=10)
 	private Date event_last_date;
 	private String event_min_age;
 	private String event_max_age;
