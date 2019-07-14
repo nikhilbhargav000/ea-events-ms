@@ -18,7 +18,7 @@ import lombok.ToString;
  *
  */
 
-@Document
+@Document(collection="ProviderCollection")
 @AllArgsConstructor
 @Getter @Setter
 @ToString
