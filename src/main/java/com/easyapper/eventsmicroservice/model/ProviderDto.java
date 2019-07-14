@@ -12,6 +12,7 @@ import lombok.ToString;
 @ToString
 public class ProviderDto {
 
+	private String _id;
+	private String name;
 	private String organizerEmail;
-	
 }

@@ -28,10 +28,12 @@ public class SubscribedEventEntity {
 	private Date event_start_time;
 	@DateTimeFormat
 	private Date event_end_time;
+	private PostedEventEntity posted_event;
 	
-	//Constructor
+	// Constructor
 	public SubscribedEventEntity(String _id, String user_id, String post_event_id, String event_type,
-			Date event_start_date, Date event_last_date, Date event_start_time, Date event_end_time) {
+			Date event_start_date, Date event_last_date, Date event_start_time, Date event_end_time, 
+			PostedEventEntity posted_event) {
 		super();
 		this._id = _id;
 		this.user_id = user_id;
@@ -41,6 +43,7 @@ public class SubscribedEventEntity {
 		this.event_last_date = event_last_date;
 		this.event_start_time = event_start_time;
 		this.event_end_time = event_end_time;
+		this.posted_event = posted_event;
 	}
-	
+
 }

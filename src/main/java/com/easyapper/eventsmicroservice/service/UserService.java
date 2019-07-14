@@ -68,11 +68,14 @@ public class UserService {
 		return postedEventDao.insertEvent(eventEntity);
 	}
 	
-	public String createSubscribededEvent(String userId, EventDto eventDto) throws EasyApperDbException, InvalidPostedEventIdException {
+	public String createSubscribededEvent(String userId, EventDto eventDto) throws EasyApperDbException, InvalidPostedEventIdException, EventIdNotExistException {
 		if(!validator.isValidPostedEventId(eventDto.getPosted_event_id())) {
 			throw new InvalidPostedEventIdException();
 		}
-		SubscribedEventEntity subcEventEntity = eventsTranslator.getSubcribedEventEntity(eventDto);
+		String postedEventUserId = EAUtil.getUserId(eventDto.getPosted_event_id());
+		PostedEventEntity postedEventEntity = postedEventDao.getEvent(postedEventUserId, 
+				eventDto.getPosted_event_id());
+		SubscribedEventEntity subcEventEntity = eventsTranslator.getSubcribedEventEntity(eventDto, postedEventEntity);
 		String eventId = EAUtil.getSubscribedEventId(dbSeqFinder.getNextSeqValue(
 				EAConstants.FIXED_DB_NAME.SUBSCRIBED_EVENT_COLLECTION_NAME.toString()));
 		subcEventEntity.set_id(eventId);
@@ -124,7 +127,10 @@ public class UserService {
 			EventDto eventDto) throws InvalidUpdateEventRequestException, EventIdNotExistException, InvalidPostedEventIdException, SubscribedEventNotFoundException, EasyApperDbException {
 		EventDto existingEventDto = this.getSubscribedEvent(userId, eventId);
 		if(validator.isValidUpdateSubscribedEvent(eventDto, existingEventDto)) {
-			SubscribedEventEntity subcEventEntity = eventsTranslator.getSubcribedEventEntity(eventDto);
+			String postedEventUserId = EAUtil.getUserId(eventDto.getPosted_event_id());
+			PostedEventEntity postedEventEntity = postedEventDao.getEvent(postedEventUserId, 
+					eventDto.getPosted_event_id());
+			SubscribedEventEntity subcEventEntity = eventsTranslator.getSubcribedEventEntity(eventDto, postedEventEntity);
 			subcEventEntity.set_id(null);
 			subcEventEntity.setUser_id(userId);
 			subscribedEventDao.updateEvent(eventId, subcEventEntity);

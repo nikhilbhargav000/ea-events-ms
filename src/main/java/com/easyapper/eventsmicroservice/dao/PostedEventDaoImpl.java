@@ -22,7 +22,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.easyapper.eventsmicroservice.dao.helper.DaoHepler;
-import com.easyapper.eventsmicroservice.entity.EventProviderEntity;
+import com.easyapper.eventsmicroservice.entity.ProviderEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
@@ -168,9 +168,9 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	}
 	
 	@Override
-	public List<EventProviderEntity> getEventProviders(String userId, int page, int size, long skip)
+	public List<ProviderEntity> getEventProviders(String userId, int page, int size, long skip)
 			throws EasyApperDbException {
-		List<EventProviderEntity> eventProviders = new ArrayList<>();
+		List<ProviderEntity> eventProviders = new ArrayList<>();
 		try {
 			String collectionName = EAUtil.getEventCollectionName(userId);
 			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
@@ -181,7 +181,7 @@ public class PostedEventDaoImpl implements PostedEventDao{
 				LimitOperation limitStage = Aggregation.limit(size);
 				Aggregation aggregation = Aggregation.newAggregation(matchStage, groupStage, 
 						skipStage, limitStage);
-				AggregationResults<EventProviderEntity> aggregationResults = mongoTemplate.aggregate(aggregation, collectionName, EventProviderEntity.class);
+				AggregationResults<ProviderEntity> aggregationResults = mongoTemplate.aggregate(aggregation, collectionName, ProviderEntity.class);
 				if (CollectionUtils.isNotEmpty(aggregationResults.getMappedResults())) {
 					eventProviders = aggregationResults.getMappedResults();
 				}
@@ -197,14 +197,14 @@ public class PostedEventDaoImpl implements PostedEventDao{
 	@Override
 	public long getEventProvidersCount(String userId)
 			throws EasyApperDbException {
-		List<EventProviderEntity> eventProviders = new ArrayList<>();
+		List<ProviderEntity> eventProviders = new ArrayList<>();
 		//Query
 		Query query = new Query();
 		query.fields().include("organizer_email");
 		try {
 			String collectionName = EAUtil.getEventCollectionName(userId);
 			if(mongoTemplate.getCollectionNames().contains(collectionName)) {
-				eventProviders = mongoTemplate.findDistinct(query, "organizer_email", collectionName, EventProviderEntity.class);
+				eventProviders = mongoTemplate.findDistinct(query, "organizer_email", collectionName, ProviderEntity.class);
 			}				
 		} catch (Exception e) {
 			logger.warning(e.getMessage(), e);
@@ -293,6 +293,14 @@ public class PostedEventDaoImpl implements PostedEventDao{
 			throw new EasyApperDbException();
 		}
 		return eventCollectionList;
+	}
+	
+	@Override
+	public boolean collectionExists(String collectionName) {
+		if(mongoTemplate.getCollectionNames().contains(collectionName)) {
+			return true;
+		}
+		return false;
 	}
 	
 }

@@ -11,11 +11,12 @@ import com.easyapper.eventsmicroservice.model.originalevent.OrglEventDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Document
-@AllArgsConstructor
+@AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
 @ToString
 public class PostedEventEntity {

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.easyapper.eventsmicroservice.entity.AddressSubEntity;
 import com.easyapper.eventsmicroservice.entity.EventBookingSubEntity;
-import com.easyapper.eventsmicroservice.entity.EventProviderEntity;
+import com.easyapper.eventsmicroservice.entity.ProviderEntity;
 import com.easyapper.eventsmicroservice.entity.LocationSubEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.entity.SubscribedEventEntity;
@@ -23,25 +23,54 @@ import com.easyapper.eventsmicroservice.utility.EAUtil;
 @Component
 public class EventsTranslator {
 	
-	public static SubscribedEventEntity getSubcribedEventEntity(EventDto eventDto) {
+	public static SubscribedEventEntity getSubcribedEventEntity(EventDto eventDto, 
+			PostedEventEntity posted_event) {
 		SubscribedEventEntity subscribedEventEntity = new SubscribedEventEntity(
 				eventDto.get_id(), eventDto.getUser_id(), eventDto.getPosted_event_id() 
 				, eventDto.getEvent_type(),
 				EAUtil.getDateFormatObj( eventDto.getEvent_start_date()), 
 				EAUtil.getDateFormatObj( eventDto.getEvent_last_date()),
 				EAUtil.getTimeFormatObj(eventDto.getEvent_start_time()),
-				EAUtil.getTimeFormatObj(eventDto.getEvent_end_time()) );
+				EAUtil.getTimeFormatObj(eventDto.getEvent_end_time()), 
+				posted_event);
 		return subscribedEventEntity;
 	}
 	
 	public static EventDto getEventDto(SubscribedEventEntity subcEventEntity) {
+		
+		PostedEventEntity postedEventEntity = subcEventEntity.getPosted_event(); 
+		if(subcEventEntity.getPosted_event() == null) {
+			postedEventEntity = new PostedEventEntity();
+		}
+		
+		LocationSubEntity locationEntity = Optional.ofNullable( postedEventEntity.getEvent_location())
+				.orElseGet(() -> new LocationSubEntity());
+		AddressSubEntity addressEntity = Optional.ofNullable(locationEntity.getAddress())
+				.orElseGet(() -> new AddressSubEntity()) ;
+		EventBookingSubEntity bookingEntity = Optional.ofNullable(postedEventEntity.getEvent_booking())
+				.orElseGet(() -> new EventBookingSubEntity());
+		
+		AddressDto addressDto = new AddressDto(addressEntity.getId(), addressEntity.getCity(),
+				addressEntity.getStreet(), addressEntity.getPin());
+		LocationDto locationDto = new LocationDto(locationEntity.getLongitude(),
+				locationEntity.getLatitude(), addressDto);
+		EventBookingDto bookingDto = new EventBookingDto(bookingEntity.getUrl(),
+				bookingEntity.getInquiry_url());
+		
 		EventDto eventDto = new EventDto(subcEventEntity.get_id(), subcEventEntity.getUser_id(),
 				subcEventEntity.getEvent_type(),
 				EAUtil.getDateFormatStr(subcEventEntity.getEvent_start_date()),
 				EAUtil.getDateFormatStr(subcEventEntity.getEvent_last_date()),
 				subcEventEntity.getPost_event_id(), 
 				EAUtil.getTimeFormatStr(subcEventEntity.getEvent_start_time()),
-				EAUtil.getTimeFormatStr(subcEventEntity.getEvent_end_time()));
+				EAUtil.getTimeFormatStr(subcEventEntity.getEvent_end_time()),
+				postedEventEntity.getEvent_category(), postedEventEntity.getEvent_subcategory(), 
+				locationDto, postedEventEntity.getOrganizer_email(), 
+				postedEventEntity.getEvent_name(), postedEventEntity.getEvent_description(), 
+				postedEventEntity.getEvent_image_url(), postedEventEntity.getEvent_min_age(), 
+				postedEventEntity.getEvent_max_age(), postedEventEntity.getEvent_price(), 
+				bookingDto, postedEventEntity.getEvent_approved());
+		
 		return eventDto;
 	}
 	
@@ -125,10 +154,11 @@ public class EventsTranslator {
 		return eventDtoList;
 	}
 	
-	public List<ProviderDto> getProviderDtoList(List<EventProviderEntity> providerEntities){
+	public List<ProviderDto> getProviderDtoList(List<ProviderEntity> providerEntities){
 		List<ProviderDto> providerDtos = new ArrayList<>();
 		providerEntities.stream().forEach((providerEntity) -> {
-			providerDtos.add(new ProviderDto(providerEntity.getOrganizer_email()));
+			providerDtos.add(new ProviderDto(providerEntity.get_id(), providerEntity.getName(), 
+					providerEntity.getOrganizer_email()));
 		});
 		
 		return providerDtos;

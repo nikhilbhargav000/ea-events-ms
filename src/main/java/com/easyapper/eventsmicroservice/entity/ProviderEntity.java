@@ -22,9 +22,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter @Setter
 @ToString
-public class EventProviderEntity {
+public class ProviderEntity {
 	
 	@Id
+	private String _id;
+	private String name;
 	private String organizer_email;
 	
 }

@@ -121,6 +121,10 @@ public class DaoHepler {
 		}
 	}
 	
+	public void setPaginationInQuery(Query query, int page, int size) {
+		setPaginationInQuery(query, page, size, 0);
+	}
+	
 	public void setPaginationInQuery(Query query, int page, int size, long skip){
 		long totalskip = ((page - 1) * size) + skip;
 		query.skip(totalskip);

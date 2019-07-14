@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.easyapper.eventsmicroservice.dao.PostedEventDao;
-import com.easyapper.eventsmicroservice.entity.EventProviderEntity;
+import com.easyapper.eventsmicroservice.dao.ProviderDao;
+import com.easyapper.eventsmicroservice.entity.ProviderEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
@@ -28,6 +29,8 @@ public class EventService {
 	EventsTranslator eventsTranslator;
 	@Autowired
 	PostedEventDao postedEventDao;
+	@Autowired
+	ProviderDao providerDao;
 	
 	public List<EventDto> getAllPostedEvents(Map<String, String> paramMap, int page, int size) 
 			throws EasyApperDbException, InvalidDateFormatException, InvalidTimeFormatException {
@@ -85,30 +88,37 @@ public class EventService {
 		return postedDtoList;
 	}
 	
+	
+	
 	public List<ProviderDto> getProviders(int page, int size) throws EasyApperDbException {
-		
-		List<String> eventCollectionNameList = postedEventDao.getAllEventCollectionName();
-		List<String> userIdList = this.getUserIdList(eventCollectionNameList);
-		List<EventProviderEntity> providerEntities = new ArrayList<>();
-		long toSkip = (page-1) * size;
-		int toPickSize = size;
-		for(String userId : userIdList) {
-			List<EventProviderEntity> userEventProviderEntities = postedEventDao.getEventProviders(userId, 1, toPickSize, toSkip); 
-			if(userEventProviderEntities.size() == 0) {
-				toSkip -= postedEventDao.getEventProvidersCount(userId);
-			}else if(userEventProviderEntities.size() > 0) {
-				toSkip = 0;
-				toPickSize -= userEventProviderEntities.size();
-			}
-			providerEntities.addAll(userEventProviderEntities);
-			if(toSkip < 0) {
-				toSkip = 0;
-			}
-			if(toPickSize <= 0) {
-				break;
-			}
-		}
+		List<ProviderEntity> providerEntities = providerDao.getProviders(page, size);
 		return eventsTranslator.getProviderDtoList(providerEntities);
 	}
+	
+//	public List<ProviderDto> getProviders(int page, int size) throws EasyApperDbException {
+//		
+//		List<String> eventCollectionNameList = postedEventDao.getAllEventCollectionName();
+//		List<String> userIdList = this.getUserIdList(eventCollectionNameList);
+//		List<EventProviderEntity> providerEntities = new ArrayList<>();
+//		long toSkip = (page-1) * size;
+//		int toPickSize = size;
+//		for(String userId : userIdList) {
+//			List<EventProviderEntity> userEventProviderEntities = postedEventDao.getEventProviders(userId, 1, toPickSize, toSkip); 
+//			if(userEventProviderEntities.size() == 0) {
+//				toSkip -= postedEventDao.getEventProvidersCount(userId);
+//			}else if(userEventProviderEntities.size() > 0) {
+//				toSkip = 0;
+//				toPickSize -= userEventProviderEntities.size();
+//			}
+//			providerEntities.addAll(userEventProviderEntities);
+//			if(toSkip < 0) {
+//				toSkip = 0;
+//			}
+//			if(toPickSize <= 0) {
+//				break;
+//			}
+//		}
+//		return eventsTranslator.getProviderDtoList(providerEntities);
+//	}
 	
 }

@@ -3,7 +3,7 @@ package com.easyapper.eventsmicroservice.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.easyapper.eventsmicroservice.entity.EventProviderEntity;
+import com.easyapper.eventsmicroservice.entity.ProviderEntity;
 import com.easyapper.eventsmicroservice.entity.PostedEventEntity;
 import com.easyapper.eventsmicroservice.exception.EasyApperDbException;
 import com.easyapper.eventsmicroservice.exception.EventIdNotExistException;
@@ -22,7 +22,7 @@ public interface PostedEventDao {
 	public List<PostedEventEntity> getAllEvent(String userId, Map<String, String> paramMap, int page, int size, long skip)
 			throws UserIdNotExistException, InvalidTimeFormatException, InvalidDateFormatException, EasyApperDbException ;
 	
-	public List<EventProviderEntity> getEventProviders(String userId, int page, int size, long skip) throws EasyApperDbException ;
+	public List<ProviderEntity> getEventProviders(String userId, int page, int size, long skip) throws EasyApperDbException ;
 	
 	public void updateEvent(String userId, String eventId, PostedEventEntity updateEventEntity) 
 			throws UserIdNotExistException, EventIdNotExistException, EasyApperDbException ;
@@ -38,4 +38,7 @@ public interface PostedEventDao {
 	
 	public long getEventProvidersCount(String userId)
 			throws EasyApperDbException ;
+	
+	public boolean collectionExists(String collectionName) ;
+	
 }

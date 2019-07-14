@@ -46,7 +46,7 @@ public class EventDto implements Cloneable{
 			LocationDto event_location, String organizer_email, String event_name, String event_description,
 			String event_image_url, String event_start_date, String event_last_date, String event_min_age,
 			String event_max_age, String event_price, EventBookingDto event_booking,
-			OrglEventDto original_event, String approved, 
+			OrglEventDto original_event, String event_approved, 
 			String event_start_time, String event_end_time) {
 		super();
 		this._id = _id;
@@ -66,7 +66,7 @@ public class EventDto implements Cloneable{
 		this.event_price = event_price;
 		this.event_booking = event_booking;
 		this.original_event = original_event;
-		this.event_approved = approved;
+		this.event_approved = event_approved;
 		this.event_start_time = event_start_time;
 		this.event_end_time = event_end_time;
 	}
@@ -74,7 +74,12 @@ public class EventDto implements Cloneable{
 	public EventDto(@Null(message = "_id should be null") String _id,
 			@Null(message = "user_id should be null") String user_id,
 			@NotBlank(message = "event_type should not be blank or null") String event_type, String event_start_date,
-			String event_last_date, String posted_event_id, String event_start_time, String event_end_time) {
+			String event_last_date, String posted_event_id, String event_start_time, String event_end_time, 
+			
+			String event_category, String event_subcategory,
+			LocationDto event_location, String organizer_email, String event_name, String event_description,
+			String event_image_url, String event_min_age,
+			String event_max_age, String event_price, EventBookingDto event_booking, String event_approved) {
 		super();
 		this._id = _id;
 		this.user_id = user_id;
@@ -84,6 +89,20 @@ public class EventDto implements Cloneable{
 		this.posted_event_id = posted_event_id;
 		this.event_start_time = event_start_time;
 		this.event_end_time = event_end_time;
+		
+		//For Posted Event
+		this.event_category = event_category;
+		this.event_subcategory = event_subcategory;
+		this.event_location = event_location;
+		this.organizer_email = organizer_email;
+		this.event_name = event_name;
+		this.event_description = event_description;
+		this.event_image_url = event_image_url;
+		this.event_min_age = event_min_age;
+		this.event_max_age = event_max_age;
+		this.event_price = event_price;
+		this.event_booking = event_booking;
+		this.event_approved = event_approved;
 	}
 	public EventDto() {
 		super();

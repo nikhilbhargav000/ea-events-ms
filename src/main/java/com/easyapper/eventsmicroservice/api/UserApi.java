@@ -114,6 +114,9 @@ public class UserApi {
 		} catch (InvalidPostedEventIdException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		} catch (EventIdNotExistException  e) {
+			logger.warning(e.getMessage(), e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		} catch (EasyApperDbException e) {
 			logger.warning(e.getMessage(), e);
 			return new ResponseEntity<String>(HttpStatus.SERVICE_UNAVAILABLE);
